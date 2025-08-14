@@ -1,5 +1,5 @@
 /* Copyright 2013-2024 Axel Huebl, Rene Widera, Benjamin Worpitz,
- *                     Richard Pausch, Klaus Steiniger
+ *                     Richard Pausch, Pawel Ordyna, Klaus Steiniger
  *
  * This file is part of PIConGPU.
  *
@@ -28,61 +28,104 @@
 
 #pragma once
 
+#include "picongpu/param/physicalConstants.param"
 #include "picongpu/particles/manipulators/manipulators.def"
 #include "picongpu/particles/startPosition/functors.def"
 
 #include <pmacc/math/operation.hpp>
 
-#include <limits>
-
 namespace picongpu
 {
     namespace particles
     {
-#ifdef PARAM_SINGLE_PARTICLE
         /** a particle with a weighting below MIN_WEIGHTING will not
          *      be created / will be deleted
          *
          *  unit: none */
-        // note: this specific setting allows all kinds of weightings > 0.0
-        constexpr float_X MIN_WEIGHTING = std::numeric_limits<float_X>::min();
-#else
         constexpr float_X MIN_WEIGHTING = 10.0;
-#endif
 
         namespace manipulators
         {
-            /** Define Lorentz factor of initial particle drift. */
-            struct DriftParamNegative
+            /** Define Lorentz factor of initial particle drift for slow particles. */
+            struct DriftSlowParam
             {
-                static constexpr float_64 gamma = 5.0;
+                static constexpr float_64 gamma = 1.00005; // v = 0.01c
                 /** Define initial particle drift direction vector.
                  */
-                static constexpr auto driftDirection = float3_X(0.0, -1.0, 0.0);
-            };
-            /** Define Lorentz factor of initial particle drift. */
-            struct DriftParamPositive
-            {
-                static constexpr float_64 gamma = 5.0;
-                /** Define initial particle drift direction vector.
-                 */
-                static constexpr auto driftDirection = float3_X(0.0, 1.0, 0.0);
+                static constexpr auto driftDirection = float3_X(1.0, 0.0, 0.0);
             };
 
             /** Definition of manipulator that assigns a drift in X
-             *  using parameters from struct DriftParam.
+             *  using parameters from struct DriftSlowParam.
              */
-            using AssignYDriftNegative = unary::Drift<DriftParamNegative, pmacc::math::operation::Assign>;
-            using AssignYDriftPositive = unary::Drift<DriftParamPositive, pmacc::math::operation::Assign>;
+            using AssignSlowDrift = unary::Drift<DriftSlowParam, pmacc::math::operation::Assign>;
+
+            /** Define Lorentz factor of initial particle drift for fast particles. */
+            struct DriftFastParam
+            {
+                static constexpr float_64 gamma = 1.00125; // v = 0.05c
+                /** Define initial particle drift direction vector.
+                 */
+                static constexpr auto driftDirection = float3_X(1.0, 0.0, 0.0);
+            };
+
+            /** Definition of manipulator that assigns a drift in X
+             *  using parameters from struct DriftFastParam.
+             */
+            using AssignFastDrift = unary::Drift<DriftFastParam, pmacc::math::operation::Assign>;
+
+            /** Define initial temperature of electrons. */
+            struct TemperatureParamElectrons
+            {
+                /** Initial temperature
+                 *  unit: keV
+                 */
+                static constexpr float_64 temperature
+                    = sim.si.conv().joule2eV(
+                          sim.si.getElectronMass() * sim.si.getSpeedOfLight() * sim.si.getSpeedOfLight())
+                      * 0.0002;
+            };
+
+            /** Definition of manipulator assigning a temperature
+             *  using parameters from struct TemperatureParamElectrons.
+             */
+            using AddTemperatureElectrons = unary::Temperature<TemperatureParamElectrons>;
+
+            /** Define initial temperature of ions. */
+            struct TemperatureParamIons
+            {
+                /** Initial temperature
+                 *  unit: keV
+                 */
+                static constexpr float_64 temperature
+                    = sim.si.conv().joule2eV(
+                          sim.si.getElectronMass() * sim.si.getSpeedOfLight() * sim.si.getSpeedOfLight())
+                      * 0.02;
+            };
+
+            /** Definition of manipulator assigning a temperature
+             *  using parameters from struct TemperatureParamIons.
+             */
+            using AddTemperatureIons = unary::Temperature<TemperatureParamIons>;
+
+
+            /** Definition of manipulator that sets the ionization state of an ion macro-particle
+             * to charge state 1, ie. number of bound electrons is (number of protons - 1)
+             */
+            using IonCharge1 = unary::ChargeState<1u>;
+
+            /** Definition of manipulator that sets the ionization state of an ion macro-particle
+             * to charge state 3, ie. number of bound electrons is (number of protons - 3)
+             */
+            using IonCharge3 = unary::ChargeState<3u>;
 
         } // namespace manipulators
 
         namespace startPosition
         {
-            /** Define target number for marco-particles per cell
-             * to be used in Random start position functor.
-             */
-            struct RandomParameter
+            //! Define initial in-cell particle position used as parameter in OnePosition functor.
+            template<uint32_t numParticles>
+            struct OnePositionParam
             {
                 /** Maximum number of macro-particles per cell during density profile evaluation.
                  *
@@ -92,27 +135,7 @@ namespace picongpu
                  *
                  * unit: none
                  */
-                static constexpr uint32_t numParticlesPerCell = TYPICAL_PARTICLES_PER_CELL;
-            };
-
-            /** Definition of start position functor that randomly distributes macro-particles within a cell. */
-            using Random = RandomImpl<RandomParameter>;
-
-            /** Configuration of initial in-cell particle position
-             *
-             * Here, macro-particles sit directly in lower corner of the cell.
-             */
-            struct OnePositionParameter
-            {
-                /** Maximum number of macro-particles per cell during density profile evaluation.
-                 *
-                 * Determines the weighting of a macro particle as well as the number of
-                 * macro-particles which sample the evolution of the particle distribution
-                 * function in phase space.
-                 *
-                 * unit: none
-                 */
-                static constexpr uint32_t numParticlesPerCell = TYPICAL_PARTICLES_PER_CELL;
+                static constexpr uint32_t numParticlesPerCell = numParticles;
 
                 /** each x, y, z in-cell position component in range [0.0, 1.0)
                  *
@@ -121,10 +144,14 @@ namespace picongpu
                 static constexpr auto inCellOffset = float3_X(0., 0., 0.);
             };
 
-            /** Definition of OnePosition start position functor that
+            /** Definition of start position functor that
              * places macro-particles at the initial in-cell position defined above.
+             * Number of macro-particles per cell is defined by argument to OnePositionParam<>.
              */
-            using OnePosition = OnePositionImpl<OnePositionParameter>;
+            using Corner100ppc = OnePositionImpl<OnePositionParam<TYPICAL_PARTICLES_PER_CELL>>;
+            using Corner1000ppc = OnePositionImpl<OnePositionParam<10u * TYPICAL_PARTICLES_PER_CELL>>;
+
         } // namespace startPosition
+
     } // namespace particles
 } // namespace picongpu

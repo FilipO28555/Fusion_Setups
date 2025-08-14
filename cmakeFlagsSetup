@@ -1,2 +1,2 @@
 Last configured cmakeFlags setup was the setup No.: 0
-
+-DPARAM_OVERWRITES:LIST='-DPARAM_DENSITY_RATIO_IONS=10.0;-DPARAM_DELTA_T=0.2;-DPARAM_CHARGE_IONS=IonCharge1;-DPARAM_DRIFT_ELECTRONS=AssignFastDrift'

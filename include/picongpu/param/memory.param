@@ -1,4 +1,4 @@
-/* Copyright 2013-2024 Axel Huebl, Rene Widera, Benjamin Worpitz
+/* Copyright 2013-2024 Axel Huebl, Rene Widera, Benjamin Worpitz, Pawel Ordyna
  *
  * This file is part of PIConGPU.
  *
@@ -47,7 +47,7 @@ namespace picongpu
      *
      * volume of a superCell must be <= 1024
      */
-    using SuperCellSize = typename mCT::shrinkTo<mCT::Int<8, 8, 4>, simDim>::type;
+    using SuperCellSize = typename mCT::shrinkTo<mCT::Int<16, 16, 1>, simDim>::type;
 
     /** number of slots for particles within a frame */
     static constexpr uint32_t numFrameSlots = pmacc::math::CT::volume<SuperCellSize>::type::value;
@@ -80,10 +80,10 @@ namespace picongpu
      */
     struct DefaultExchangeMemCfg
     {
-        // Memory used for a direction for a simulation performed with 64bit precision.
-        static constexpr uint32_t BYTES_EXCHANGE_X = 5 * 4 * 1024 * 1024; // 4 MiB
-        static constexpr uint32_t BYTES_EXCHANGE_Y = 5 * 12 * 1024 * 1024; // 12 MiB
-        static constexpr uint32_t BYTES_EXCHANGE_Z = 5 * 4 * 1024 * 1024; // 4 MiB
+        // Memory used for a direction for a simulation performed with 32bit precision.
+        static constexpr uint32_t BYTES_EXCHANGE_X = 4 * 1024 * 1024; // 3 MiB
+        static constexpr uint32_t BYTES_EXCHANGE_Y = 12 * 1024 * 1024; // 9 MiB
+        static constexpr uint32_t BYTES_EXCHANGE_Z = 4 * 1024 * 1024; // 3 MiB
         static constexpr uint32_t BYTES_EDGES = 32 * 1024; // 32 kiB
         static constexpr uint32_t BYTES_CORNER = 8 * 1024; // 8 kiB
 
@@ -104,7 +104,7 @@ namespace picongpu
     };
 
     /** number of scalar fields that are reserved as temporary fields */
-    constexpr uint32_t fieldTmpNumSlots = 1;
+    constexpr uint32_t fieldTmpNumSlots = 3;
 
     /** can `FieldTmp` gather neighbor information
      *

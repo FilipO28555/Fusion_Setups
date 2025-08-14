@@ -1,21 +1,21 @@
-# Fusion Setups for PIConGPU
+# BunchFusion Setups for PIConGPU
 
-This repository contains fusion simulation setups for PIConGPU (Particle-in-Cell on Graphics Processing Units).
+This repository contains BunchFusion simulation setups for PIConGPU (Particle-in-Cell on Graphics Processing Units).
 
 ## Branches
 
-- **main**: Contains the main fusion setup from `FusionSetup`
-- **static**: Contains the static fusion setup from `FusionSetup_Static`
+- **main**: Contains the main BunchFusion setup from `FusionSetup`
+- **static**: Contains the static BunchFusion setup from `FusionSetup_Static` (current branch)
 
-## Structure
+## Structure (Static Branch)
 
 ```
 ├── bin/           # Executable files and scripts
 ├── etc/           # Configuration files and templates
-├── include/       # PIConGPU parameter files
+├── include/       # PIConGPU parameter files (static setup)
+├── lib/           # Python libraries and utilities
 ├── cmakeFlags     # CMake configuration flags
-├── cmakeFlagsSetup # CMake setup flags
-└── compile_run.sh # Compilation and run script
+└── cmakeFlagsSetup # CMake setup flags
 ```
 
 ## Usage

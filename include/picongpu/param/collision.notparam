@@ -20,7 +20,7 @@
 #pragma once
 
 #include "picongpu/param/particleFilters.param"
-#include "picongpu/particles/fusion/fusion.def"
+#include "picongpu/particles/collision/collision.def"
 #include "picongpu/plugins/misc/SpeciesFilter.hpp"
 
 #include <pmacc/meta/conversion/MakeSeq.hpp>
@@ -34,7 +34,7 @@ namespace picongpu
 {
     namespace particles
     {
-        namespace fusion
+        namespace collision
         {
             namespace precision
             {
@@ -43,38 +43,47 @@ namespace picongpu
 
             using namespace picongpu::plugins;
 
+#if (PARAM_DYNAMIC_LOG == 1)
+            using CollisionScreeningSpecies = MakeSeq_t<
+                misc::SpeciesFilter<IonsMore, filter::LowerXPosition>,
+                misc::SpeciesFilter<ElectronsMore, filter::LowerXPosition>,
+                misc::SpeciesFilter<IonsLess, filter::MiddleXPosition>,
+                misc::SpeciesFilter<ElectronsMore, filter::MiddleXPosition>,
+                misc::SpeciesFilter<ElectronsLess, filter::UpperXPosition>,
+                misc::SpeciesFilter<IonsMore, filter::UpperXPosition>>;
+#else
+            using CollisionScreeningSpecies = MakeSeq_t<>;
+#endif
+            constexpr bool debugScreeningLength = true;
+
             // not ideal, better would be to combine filters with an AND but it is ok
 
 
-            struct DT
+            struct Params
             {
-                struct Params
-                {
-                    static constexpr float_X C1 = 3.0_X;
-                    static constexpr float_X C2 = 3.0_X;
-                };
-
-                using reactants = pmacc::mp_list<
-                    Pair<ElectronsMore, IonsMore>
-                    >;
-
-                using products = pmacc::mp_list<
-                    Pair<ElectronsMore, IonsMore>
-                    >;
-                
-                using ColliderFunctor = relativistic::FusionFunctor<Params, false>;
-
+                static constexpr float_X coulombLog = 3.0_X;
             };
 
+#if (PARAM_DYNAMIC_LOG == 1)
+            using ColliderFunctor = relativistic::RelativisticCollisionDynamicLog<true>;
+#else
+            using ColliderFunctor = relativistic::RelativisticCollisionConstLog<Params, true>;
+#endif
 
-            /** FusionPipeline defines in which order species interact with each other
+            /** CollisionPipeline defines in which order species interact with each other
              *
              * the functors are called in order (from first to last functor)
              */
-            using FusionPipeline = pmacc::mp_list<
-                Collider<DT::ColliderFunctor, DT::reactants, DT::products, OneFilter<filter::All>>>;
-
-            // using FusionPipeline = pmacc::mp_list<ColliderFromStruct<DT>>;
+            using CollisionPipeline = pmacc::mp_list<>;
+                Collider<ColliderFunctor, MakeSeq_t<Pair<ElectronsMore, IonsMore>>, OneFilter<filter::LowerXPosition>>,
+                Collider<
+                    ColliderFunctor,
+                    MakeSeq_t<Pair<ElectronsMore, IonsLess>>,
+                    OneFilter<filter::MiddleXPosition>>,
+                Collider<
+                    ColliderFunctor,
+                    MakeSeq_t<Pair<ElectronsLess, IonsMore>>,
+                    OneFilter<filter::UpperXPosition>>>;
 
             /** Chunk size used for cell list allocations.
              *
@@ -82,11 +91,6 @@ namespace picongpu
              * multiple of this value to store a cell list of particle IDs. The value must be non zero.
              */
             constexpr uint32_t cellListChunkSize = TYPICAL_PARTICLES_PER_CELL;
-            constexpr uint32_t pairListChunkSize = std::min(TYPICAL_PARTICLES_PER_CELL*TYPICAL_PARTICLES_PER_CELL, 16u);
-            // if weighting of the products were to be less or equal than productMinWeighting we set  Fmult = std::max(1,productWeighting/productMinWeighting);
-            constexpr float_X productMinWeighting = 1;
-            constexpr uint32_t maxFmult = 1;
-            constexpr bool debugFusion = false;
         } // namespace collision
     } // namespace particles
 } // namespace picongpu

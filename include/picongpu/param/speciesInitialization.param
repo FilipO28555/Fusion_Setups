@@ -1,4 +1,4 @@
-/* Copyright 2015-2024 Rene Widera, Axel Huebl
+/* Copyright 2015-2024 Rene Widera, Axel Huebl, Pawel Ordyna
  *
  * This file is part of PIConGPU.
  *
@@ -30,24 +30,38 @@
 
 #include "picongpu/particles/InitFunctors.hpp"
 
+#ifndef PARAM_DRIFT_ELECTRONS
+#    define PARAM_DRIFT_ELECTRONS AssignFastDrift
+#endif
+#ifndef PARAM_CHARGE_IONS
+#    define PARAM_CHARGE_IONS IonCharge1
+#endif
+
 namespace picongpu
 {
     namespace particles
     {
-        /** InitPipeline define in which order species are initialized
+        /** InitPipeline defines in which order species are initialized
          *
          * the functors are called in order (from first to last functor)
          */
         using InitPipeline = pmacc::mp_list<
-#ifdef PARAM_SINGLE_PARTICLE
-            CreateDensity<densityProfiles::FreeFormula, startPosition::OnePosition, PIC_ElectronsL>,
-            CreateDensity<densityProfiles::FreeFormula, startPosition::OnePosition, PIC_ElectronsR>,
-#else
-            CreateDensity<densityProfiles::GaussianCloudL, startPosition::Random, PIC_ElectronsL>,
-            CreateDensity<densityProfiles::GaussianCloudR, startPosition::Random, PIC_ElectronsR>,
-#endif
-            Manipulate<manipulators::AssignYDriftPositive, PIC_ElectronsL>,
-            Manipulate<manipulators::AssignYDriftNegative, PIC_ElectronsR>>;
+            // Generate Densities
+            CreateDensity<densityProfiles::Homogenous, startPosition::Corner100ppc, ElectronsLess>,
+            CreateDensity<densityProfiles::Homogenous, startPosition::Corner1000ppc, ElectronsMore>,
+            CreateDensity<densityProfiles::Homogenous, startPosition::Corner100ppc, IonsLess>,
+            CreateDensity<densityProfiles::Homogenous, startPosition::Corner1000ppc, IonsMore>,
+            // Set initial temperatures
+            Manipulate<manipulators::AddTemperatureElectrons, ElectronsLess>,
+            Manipulate<manipulators::AddTemperatureElectrons, ElectronsMore>,
+            Manipulate<manipulators::AddTemperatureIons, IonsLess>,
+            Manipulate<manipulators::AddTemperatureIons, IonsMore>,
+            // Set initial drifts
+            Manipulate<manipulators::PARAM_DRIFT_ELECTRONS, ElectronsLess>,
+            Manipulate<manipulators::PARAM_DRIFT_ELECTRONS, ElectronsMore>,
+            // Set bound electrons
+            Manipulate<manipulators::PARAM_CHARGE_IONS, IonsLess>,
+            Manipulate<manipulators::PARAM_CHARGE_IONS, IonsMore>>;
 
     } // namespace particles
 } // namespace picongpu
