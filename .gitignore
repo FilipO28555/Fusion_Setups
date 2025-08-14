@@ -1,0 +1,40 @@
+# Build directories
+.build/
+build/
+**/build/
+**/.build/
+
+# Log files
+*.log
+output.log
+compile.log
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Object files
+*.o
+*.obj
+*.so
+*.a
+
+# Executables
+*.exe
+a.out
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
