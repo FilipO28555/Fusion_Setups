@@ -4,6 +4,10 @@ build/
 **/build/
 **/.build/
 
+# Binary/executable directories
+bin/
+**/bin/
+
 # Log files
 *.log
 output.log
