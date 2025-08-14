@@ -10,13 +10,18 @@ This repository contains BunchFusion simulation setups for PIConGPU (Particle-in
 ## Structure (Static Branch)
 
 ```
-├── bin/           # Executable files and scripts
 ├── etc/           # Configuration files and templates
-├── include/       # PIConGPU parameter files (static setup)
+├── include/       # PIConGPU parameter files (static setup with extended parameters)
 ├── lib/           # Python libraries and utilities
 ├── cmakeFlags     # CMake configuration flags
 └── cmakeFlagsSetup # CMake setup flags
 ```
+
+## Static Branch Features
+
+- Extended parameter files including collision, dimension, fieldSolver, and precision parameters
+- Python beam relaxation verification tools in `lib/python/picongpu/`
+- Additional particle filters and species definitions
 
 ## Usage
 
@@ -28,4 +33,5 @@ This repository contains BunchFusion simulation setups for PIConGPU (Particle-in
 ## Notes
 
 - Build directories (`.build/`, `build/`) are excluded from version control
+- Binary/executable directories (`bin/`) are excluded from version control
 - Log files are also excluded from the repository
