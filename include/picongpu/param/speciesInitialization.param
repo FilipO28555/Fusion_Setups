@@ -39,13 +39,9 @@ namespace picongpu
          * the functors are called in order (from first to last functor)
          */
         using InitPipeline = pmacc::mp_list<
-#ifdef PARAM_SINGLE_PARTICLE
-            CreateDensity<densityProfiles::FreeFormula, startPosition::OnePosition, PIC_ElectronsL>,
-            CreateDensity<densityProfiles::FreeFormula, startPosition::OnePosition, PIC_ElectronsR>,
-#else
             CreateDensity<densityProfiles::GaussianCloudL, startPosition::Random, PIC_ElectronsL>,
             CreateDensity<densityProfiles::GaussianCloudR, startPosition::Random, PIC_ElectronsR>,
-#endif
+            
             Manipulate<manipulators::AssignYDriftPositive, PIC_ElectronsL>,
             Manipulate<manipulators::AssignYDriftNegative, PIC_ElectronsR>>;
 
