@@ -43,12 +43,13 @@ namespace picongpu
     /*########################### end particle attributes ########################*/
 
     /*########################### define species #################################*/
-
+    constexpr float_X amu = 1._X/5.486e-4_X; 
+    
     /*--------------------------- electrons --------------------------------------*/
 
     /* ratio relative to base charge and base mass */
     value_identifier(float_X, MassRatioElectrons, 1.0);
-    value_identifier(float_X, ChargeRatioElectrons, 1.0);
+    value_identifier(float_X, ChargeRatioElectrons, -1.0);
 
     using ParticleFlagsElectrons = MakeSeq_t<
         particlePusher<UsedParticlePusher>,
@@ -58,14 +59,75 @@ namespace picongpu
         chargeRatio<ChargeRatioElectrons>>;
 
     /* define species electrons */
-    using PIC_ElectronsL = Particles<PMACC_CSTRING("eL"), ParticleFlagsElectrons, DefaultParticleAttributes>;
-    using PIC_ElectronsR = Particles<PMACC_CSTRING("eR"), ParticleFlagsElectrons, DefaultParticleAttributes>;
-    using PIC_ElectronsProduct1 = Particles<PMACC_CSTRING("eP1"), ParticleFlagsElectrons, DefaultParticleAttributes>;
-    using PIC_ElectronsProduct2 = Particles<PMACC_CSTRING("eP2"), ParticleFlagsElectrons, DefaultParticleAttributes>;
+    using PIC_Electrons = Particles<PMACC_CSTRING("e"), ParticleFlagsElectrons, DefaultParticleAttributes>;
+
+    /*--------------------------- Neutrons --------------------------------------*/
+
+    /* ratio relative to base charge and base mass */
+    value_identifier(float_X, MassRatioNeutrons, 1.0087*amu);
+    value_identifier(float_X, ChargeRatioNeutrons, 0.0);
+
+    using ParticleFlagsNeutrons = MakeSeq_t<
+        particlePusher<UsedParticlePusher>,
+        shape<UsedParticleShape>,
+        interpolation<UsedField2Particle>,
+        massRatio<MassRatioNeutrons>,
+        chargeRatio<ChargeRatioNeutrons>>;
+
+    /* define species neutrons */
+    using PIC_Neutrons = Particles<PMACC_CSTRING("n"), ParticleFlagsNeutrons, DefaultParticleAttributes>;
+
+    /*--------------------------- Deuterons --------------------------------------*/
+
+    /* ratio relative to base charge and base mass */
+    value_identifier(float_X, MassRatioDeuterons, 2.0135*amu);
+    value_identifier(float_X, ChargeRatioDeuterons, 1.0);
+
+    using ParticleFlagsDeuterons = MakeSeq_t<
+        particlePusher<UsedParticlePusher>,
+        shape<UsedParticleShape>,
+        interpolation<UsedField2Particle>,
+        massRatio<MassRatioDeuterons>,
+        chargeRatio<ChargeRatioDeuterons>>;
+
+    /* define species deuterons */
+    using PIC_Deuterons = Particles<PMACC_CSTRING("d"), ParticleFlagsDeuterons, DefaultParticleAttributes>;
+
+    /*--------------------------- Tritons --------------------------------------*/
+
+    /* ratio relative to base charge and base mass */
+    value_identifier(float_X, MassRatioTritons, 3.01604928*amu);
+    value_identifier(float_X, ChargeRatioTritons, 1.0);
+
+    using ParticleFlagsTritons = MakeSeq_t<
+        particlePusher<UsedParticlePusher>,
+        shape<UsedParticleShape>,
+        interpolation<UsedField2Particle>,
+        massRatio<MassRatioTritons>,
+        chargeRatio<ChargeRatioTritons>>;
+
+    /* define species tritons */
+    using PIC_Tritons = Particles<PMACC_CSTRING("t"), ParticleFlagsTritons, DefaultParticleAttributes>;
+
+    /*--------------------------- He4 --------------------------------------*/
+
+    /* ratio relative to base charge and base mass */
+    value_identifier(float_X, MassRatioHe4, 4.002602*amu);
+    value_identifier(float_X, ChargeRatioHe4, 2.0);
+
+    using ParticleFlagsHe4 = MakeSeq_t<
+        particlePusher<UsedParticlePusher>,
+        shape<UsedParticleShape>,
+        interpolation<UsedField2Particle>,
+        massRatio<MassRatioHe4>,
+        chargeRatio<ChargeRatioHe4>>;
+
+    /* define species He4 */
+    using PIC_He4 = Particles<PMACC_CSTRING("He4"), ParticleFlagsHe4, DefaultParticleAttributes>;
 
     /*########################### end species ####################################*/
 
-    using VectorAllSpecies = MakeSeq_t<PIC_ElectronsL, PIC_ElectronsR, PIC_ElectronsProduct1, PIC_ElectronsProduct2>;
+    using VectorAllSpecies = MakeSeq_t<PIC_Electrons, PIC_Neutrons, PIC_Deuterons, PIC_Tritons, PIC_He4>;
 
 } // namespace picongpu
 
