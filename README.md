@@ -12,9 +12,7 @@ This repository contains BunchFusion simulation setups for PIConGPU (Particle-in
 ```
 ├── etc/           # Configuration files and templates
 ├── include/       # PIConGPU parameter files
-├── cmakeFlags     # CMake configuration flags
-├── cmakeFlagsSetup # CMake setup flags
-└── compile_run.sh # Compilation and run script (main branch only)
+└── compile_run.sh # Compilation and run script 
 ```
 
 ## Usage

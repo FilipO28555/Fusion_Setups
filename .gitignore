@@ -13,6 +13,9 @@ bin/
 output.log
 compile.log
 
+# cmake files
+cmakeFlags*
+
 # Temporary files
 *.tmp
 *.temp
