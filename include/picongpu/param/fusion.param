@@ -97,8 +97,8 @@ namespace picongpu
              */
             constexpr uint32_t cellListChunkSize = TYPICAL_PARTICLES_PER_CELL;
             // if weighting of the products were to be less or equal than productMinWeighting we set  Fmult = std::max(1,productWeighting/productMinWeighting);
-            constexpr float_X productMinWeighting = 5;
-            constexpr uint32_t maxFmult = 1;
+            constexpr float_X productMinWeighting = 10;
+            constexpr uint32_t maxFmult = 1e3;
             constexpr bool debugFusion = false;
         } // namespace fusion
     } // namespace particles
