@@ -7,6 +7,15 @@
 # Usage: ./compile_run.sh [folderName]
 folderName=${1:-testRun} # Default to 'testRun' if no argument is provided
 
+# if PROJECT is not set
+if [ -z "$PROJECT" ]; then
+    PROJECT=~/..
+fi
+# if user is not set
+if [ -z "$USER" ]; then
+    USER=$(whoami)
+fi
+
 
 compileQ="yes"
 
