@@ -83,6 +83,6 @@ namespace picongpu
 #ifdef PARAM_SINGLE_PARTICLE
     constexpr uint32_t TYPICAL_PARTICLES_PER_CELL = 1;
 #else
-    constexpr uint32_t TYPICAL_PARTICLES_PER_CELL = 100;
+    constexpr uint32_t TYPICAL_PARTICLES_PER_CELL = 10;
 #endif
 } // namespace picongpu
