@@ -115,7 +115,7 @@ To provide a definitive validation of the fusion algorithm and the analysis scri
 2.  The fusion probability was manually set to `1.0` to guarantee a reaction.
 3.  The updated analysis script (`fusion_energy_analyzer_detailed.py`) was used to evaluate the output.
 
-**Results:** The simulation produced the following results, showing exceptional agreement with theory:
+**Results:** The simulation produced the following results, showing agreement with theory:
 
 ```
 ================================================================================
