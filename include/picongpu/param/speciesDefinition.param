@@ -43,7 +43,7 @@ namespace picongpu
     /*########################### end particle attributes ########################*/
 
     /*########################### define species #################################*/
-    constexpr float_X amu = 1._X/5.486e-4_X; 
+    constexpr float_X amu = 1.0_X / 5.48579909065e-4_X; 
     
     /*--------------------------- electrons --------------------------------------*/
 
@@ -64,7 +64,7 @@ namespace picongpu
     /*--------------------------- Neutrons --------------------------------------*/
 
     /* ratio relative to base charge and base mass */
-    value_identifier(float_X, MassRatioNeutrons, 1.0087*amu);
+    value_identifier(float_X, MassRatioNeutrons, 1.00866491595*amu);
     value_identifier(float_X, ChargeRatioNeutrons, 0.0);
 
     using ParticleFlagsNeutrons = MakeSeq_t<
@@ -80,7 +80,7 @@ namespace picongpu
     /*--------------------------- Deuterons --------------------------------------*/
 
     /* ratio relative to base charge and base mass */
-    value_identifier(float_X, MassRatioDeuterons, 2.0135*amu);
+    value_identifier(float_X, MassRatioDeuterons, 2.01410177812*amu);
     value_identifier(float_X, ChargeRatioDeuterons, 1.0);
 
     using ParticleFlagsDeuterons = MakeSeq_t<
@@ -96,7 +96,7 @@ namespace picongpu
     /*--------------------------- Tritons --------------------------------------*/
 
     /* ratio relative to base charge and base mass */
-    value_identifier(float_X, MassRatioTritons, 3.01604928*amu);
+    value_identifier(float_X, MassRatioTritons, 3.0160492779*amu);
     value_identifier(float_X, ChargeRatioTritons, 1.0);
 
     using ParticleFlagsTritons = MakeSeq_t<
@@ -112,7 +112,7 @@ namespace picongpu
     /*--------------------------- He4 --------------------------------------*/
 
     /* ratio relative to base charge and base mass */
-    value_identifier(float_X, MassRatioHe4, 4.002602*amu);
+    value_identifier(float_X, MassRatioHe4, 4.00260325413*amu);
     value_identifier(float_X, ChargeRatioHe4, 2.0);
 
     using ParticleFlagsHe4 = MakeSeq_t<
