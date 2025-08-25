@@ -13,7 +13,7 @@ ALL_PARTICLE_COLORS = {
     'eP1': 'magenta',
     'eP2': 'yellow',
     'eR': 'lime',
-    
+
     'd': 'red',
     't': 'orange',
     'n': 'blue',

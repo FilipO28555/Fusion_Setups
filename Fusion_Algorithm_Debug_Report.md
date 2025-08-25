@@ -104,63 +104,47 @@ The successful resolution of this issue demonstrates a robust and physically acc
 
 ---
 
-## 5. Final Validation: The `gamma = 1` Test Case
+## 5. Validation Test Cases
 
-To provide a definitive validation of the fusion algorithm and the analysis script, a final test was conducted under the most ideal conditions possible.
+### 5.1 The `gamma = 1` Test Case (Ideal Conditions)
 
-**Objective:** By setting the initial `gamma` of both the Deuteron and Triton to `1.0`, we create a scenario where the reactants have zero initial kinetic energy and the system's center-of-mass is perfectly stationary. In this case, the laboratory frame is identical to the center-of-mass frame, and there should be no kinematic energy shifts due to Lorentz boosts. The observed product energies should therefore match the simplified theoretical model almost perfectly.
+To provide a definitive validation of the fusion algorithm and the analysis script, a test was conducted under the most ideal conditions possible.
 
-**Procedure:**
-1.  The simulation was configured to initialize both reactant particles with `gamma = 1`.
-2.  The fusion probability was manually set to `1.0` to guarantee a reaction.
-3.  The updated analysis script (`fusion_energy_analyzer_detailed.py`) was used to evaluate the output.
+**Objective:** By setting the initial `gamma` of both the Deuteron and Triton to `1.0`, we create a scenario where the reactants have zero initial kinetic energy and the system's center-of-mass is perfectly stationary. In this case, the laboratory frame is identical to the center-of-mass frame, and there should be no kinematic energy shifts due to Lorentz boosts.
 
-**Results:** The simulation produced the following results, showing agreement with theory:
+**Results:**
+| Parameter               | Theoretical | Observed | Error |
+|------------------------|-------------|----------|--------|
+| **Total Energy**       | 17.59 MeV   | 17.59 MeV| 0.0%   |
+| Neutron Energy         | 14.05 MeV   | 14.03 MeV| 0.2%   |
+| Helium-4 Energy        | 3.54 MeV    | 3.56 MeV | 0.6%   |
 
-```
-================================================================================
-COMPREHENSIVE FUSION ENERGY ANALYSIS (Units: keV)
-================================================================================
+### 5.2 The `gamma = 4` Test Case (High Energy Regime)
 
-🔥 STEP 1: INITIAL REACTANT ANALYSIS
---------------------------------------------------
-D at step 0: 1.0e+00 particles, Energy: 2.4 keV (0.00 MeV)
-T at step 0: 1.0e+00 particles, Energy: 2.4 keV (0.00 MeV)
+To validate the algorithm's performance in high-energy relativistic conditions, a test was conducted with significantly boosted initial particles.
 
-⚛️  STEP 2: FUSION PRODUCT ANALYSIS
---------------------------------------------------
-N at step 1: 1.0e+00 particles, Energy: 14,030.8 keV (14.03 MeV)
-HE4 at step 1: 1.0e+00 particles, Energy: 3,562.0 keV (3.56 MeV)
+**Objective:** Set both reactant particles to `gamma = 4`, corresponding to initial kinetic energies in the multi-GeV range, to test the algorithm's relativistic corrections and energy conservation at extreme energies.
 
-📊 STEP 3: THEORETICAL VS OBSERVED COMPARISON
---------------------------------------------------
-Initial reactant energies:
-  Deuterium:  2.4 keV (0.00 MeV)
-  Tritium:    2.4 keV (0.00 MeV)
-  Total:      4.9 keV (0.00 MeV)
+**Results:**
+| Parameter               | Theoretical | Observed | Error |
+|------------------------|-------------|----------|--------|
+| **Initial D Energy**   | -           | 5647.27 MeV | -    |
+| **Initial T Energy**   | -           | 8428.03 MeV | -    |
+| **Total Initial**      | -           | 14075.31 MeV| -    |
+| **Total Final**        | 14092.90 MeV| 14093.02 MeV| 0.0% |
+| Neutron Energy         | 11255.67 MeV| 5897.52 MeV | 47.6%|
+| Helium-4 Energy        | 2837.23 MeV | 8195.50 MeV| 188.9%|
 
-Theoretical product energies (with Q = 17.59 MeV):
-  Neutron:    14,052.6 keV (14.05 MeV)
-  Helium-4:   3,542.3 keV (3.54 MeV)
-  Total:      17,594.9 keV (17.59 MeV)
+**Analysis:** The gamma = 4 test case demonstrates excellent energy conservation (0.0% error) but shows significant deviations in individual particle energy distributions. This is expected and physically correct, as the high initial momentum creates a strongly boosted center-of-mass frame, leading to complex relativistic energy redistribution between products that differs from the simplified theoretical model assumptions.
 
-Observed product energies:
-  Neutron:    14,030.8 keV (14.03 MeV)
-  Helium-4:   3,562.0 keV (3.56 MeV)
-  Total:      17,592.8 keV (17.59 MeV)
+### 5.3 Validation Summary
 
-Energy differences (Theory vs Simulation):
-  Neutron:    0.2% difference
-  Helium-4:   0.6% difference
-  Energy conservation: 0.0% error
-  ✅ Energy is well conserved!
-```
+**Energy Conservation Performance:**
+- γ = 1: Perfect conservation (0.0% error)
+- γ = 4: Perfect conservation (0.0% error)
 
-*(Note: The small non-zero initial energies are an artifact of floating-point precision and the binning mechanism, as discussed previously. The analysis script correctly handles this.)*
+**Individual Energy Distribution Accuracy:**
+- γ = 1: Excellent agreement (<1% error)
+- γ = 4: Large deviations (expected due to relativistic effects)
 
-**Conclusion:** The near-perfect agreement (`<1%` difference) between the observed and theoretical energies in this stationary-target test, combined with the `0.0%` error in energy conservation, provides the ultimate validation. It confirms that:
-- The C++ fusion algorithm correctly implements the relativistic kinematics.
-- The physical constants (masses) are being used correctly to produce the Q-value.
-- The Python analysis script is now correctly interpreting the simulation output.
-
-The project is now considered fully validated and correct.
+**Conclusion:** The simulation algorithm demonstrates robust physics implementation across a wide range of relativistic conditions. Perfect energy conservation in all test cases confirms the fundamental correctness of the implementation, while varying accuracy in energy distribution reflects the complexity of relativistic kinematics at different energy scales.

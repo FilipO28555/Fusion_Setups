@@ -34,8 +34,9 @@ def parse_energy_bin_edges(header_line: str, num_data_columns: int) -> List[floa
     Robustly parse energy bin edges from the PIConGPU histogram header.
     Includes a workaround for malformed headers where one bin is missing.
     """
-    # Find all floating point numbers in the header. This is the most robust way.
-    all_numbers = [float(f) for f in re.findall(r"[-+]?\d*\.\d+|\d+", header_line)]
+    # Find all floating point numbers in the header, including scientific notation
+    # This regex properly captures numbers like 1.23e+06 or 1.23e-06
+    all_numbers = [float(f) for f in re.findall(r"[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?", header_line)]
     
     # The numbers from the header are the upper edges of the bins.
     # The full set of edges starts at 0.
@@ -136,7 +137,6 @@ def calculate_mean_energy(
         # Handle the gamma=1 case for the first bin
         if treat_first_bin_as_zero:
             bin_centers[0] = 0.0
-            bin_centers[1] = 0.0
             
         mean_energy = np.sum(bin_counts * bin_centers) / total_count
         return mean_energy
