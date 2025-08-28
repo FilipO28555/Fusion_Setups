@@ -40,7 +40,8 @@ namespace picongpu
     namespace particles
     {
         // note: this specific setting allows all kinds of weightings > 0.0
-        constexpr float_X MIN_WEIGHTING = std::numeric_limits<float_X>::min();
+        // constexpr float_X MIN_WEIGHTING = std::numeric_limits<float_X>::min();
+        constexpr float_X MIN_WEIGHTING = 10;
 
 
         namespace manipulators
@@ -48,18 +49,18 @@ namespace picongpu
             /** Define Lorentz factor of initial particle drift. */
             struct DriftParamNegative
             {
-                static constexpr float_64 gamma = 4;
+                static constexpr float_64 gamma = 1.0001;
                 /** Define initial particle drift direction vector.
                  */
-                static constexpr auto driftDirection = float3_X(1, -1.0, 0.0);
+                static constexpr auto driftDirection = float3_X(0.0, -1.0, 0.0);
             };
             /** Define Lorentz factor of initial particle drift. */
             struct DriftParamPositive
             {
-                static constexpr float_64 gamma = 4.01;
+                static constexpr float_64 gamma = 1.0001;
                 /** Define initial particle drift direction vector.
                  */
-                static constexpr auto driftDirection = float3_X(0.0, 2.0,-1);
+                static constexpr auto driftDirection = float3_X(0.0, 1.0, 0.);
             };
 
             /** Definition of manipulator that assigns a drift in X
@@ -91,33 +92,6 @@ namespace picongpu
             /** Definition of start position functor that randomly distributes macro-particles within a cell. */
             using Random = RandomImpl<RandomParameter>;
 
-            /** Configuration of initial in-cell particle position
-             *
-             * Here, macro-particles sit directly in lower corner of the cell.
-             */
-            struct OnePositionParameter
-            {
-                /** Maximum number of macro-particles per cell during density profile evaluation.
-                 *
-                 * Determines the weighting of a macro particle as well as the number of
-                 * macro-particles which sample the evolution of the particle distribution
-                 * function in phase space.
-                 *
-                 * unit: none
-                 */
-                static constexpr uint32_t numParticlesPerCell = TYPICAL_PARTICLES_PER_CELL;
-
-                /** each x, y, z in-cell position component in range [0.0, 1.0)
-                 *
-                 * @details in 2D the last component is ignored
-                 */
-                static constexpr auto inCellOffset = float3_X(0., 0., 0.);
-            };
-
-            /** Definition of OnePosition start position functor that
-             * places macro-particles at the initial in-cell position defined above.
-             */
-            using OnePosition = OnePositionImpl<OnePositionParameter>;
         } // namespace startPosition
     } // namespace particles
 } // namespace picongpu

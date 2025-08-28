@@ -140,15 +140,17 @@ def create_combined_count_plot(data_files, output_dir, color_map):
         else:
             discrepancy_text = f"No data <= {maxIter} for discrepancy"
         
-        ax.text(0.02, 0.95, discrepancy_text, transform=ax.transAxes, fontsize=12,
+        ax.text(0.02, 0.85, discrepancy_text, transform=ax.transAxes, fontsize=12,
                 verticalalignment='top', bbox=dict(boxstyle='round,pad=0.5', fc='wheat', alpha=0.5))
 
     ax.set_title('Total Real Particle Count for All Species Over Time', fontsize=16)
     ax.set_xlabel('Time Step', fontsize=12)
     ax.set_ylabel('Total Real Particle Count', fontsize=12)
     ax.grid(True, which='both', linestyle='--', linewidth=0.5)
+    # set y axes as log scale
+    ax.set_yscale('log')
     ax.legend()
-    ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+    # ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
     
     plt.tight_layout()
     

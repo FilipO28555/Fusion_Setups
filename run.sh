@@ -48,12 +48,13 @@ else
     
 fi
 
-
+# CFG=etc/picongpu/1_oPMD.cfg
+CFG=etc/picongpu/1.cfg
 if [ "$compileQ" == "yes" ]; then
     cp $PICSRC/include/picongpu/particles/fusion/InterCollision.hpp $PROJECT/$USER/$folderName/InterCollision.hpp
     cp $PICSRC/include/picongpu/particles/fusion/relativistic/FusionAlgorithm.hpp $PROJECT/$USER/$folderName/FusionAlgorithm.hpp
     echo "Running the program, see output.log for details."
-    tbg -s bash -t -c etc/picongpu/1_oPMD.cfg -f $PROJECT/$USER/$folderName > output.log
+    tbg -s bash -t -c $CFG -f $PROJECT/$USER/$folderName > output.log
     cp output.log $PROJECT/$USER/$folderName/output.log
 fi
 
