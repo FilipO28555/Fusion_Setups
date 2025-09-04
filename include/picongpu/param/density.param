@@ -1,5 +1,5 @@
 /* Copyright 2013-2024 Axel Huebl, Heiko Burau, Rene Widera, Felix Schmitt,
- *                     Richard Pausch
+ *                     Richard Pausch, Pawel Ordyna
  *
  * This file is part of PIConGPU.
  *
@@ -18,6 +18,35 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file
+ *
+ * Configure existing or define new normalized density profiles here.
+ * During particle species creation in `speciesInitialization.param`,
+ * those profiles can be translated to spatial particle distributions.
+ *
+ * This profile is normalized to units of `picongpu::SI::BASE_DENSITY_SI`, also defined in this file.
+ * Note that it only operates with physical density, and does not concern macroparticles.
+ * The number and sampling of macroparticles per cell are defined independently of a density profile.
+ * Please refer to documentation of `picongpu::particles::CreateDensity<>` for further details on this interaction.
+ *
+ * Available profiles:
+ *  - HomogenousImpl          : homogeneous density in whole simulation volume
+ *  - GaussianImpl<>          : Gaussian profile in 'y', optionally with preceeding vacuum
+ *  - GaussianCloudImpl<>     : Gaussian profile in all axes, optionally with preceeding vacuum in 'y'
+ *  - LinearExponentialImpl<> : linear ramping of density in 'y' into exponential slope after
+ *  - SphereFlanksImpl<>      : composition of 1D profiles, each in form of
+ *                              exponential increasing flank, constant sphere, exponential decreasing flank
+ *  - EveryNthCellImpl<>      : checkerboard profile matching the grid, particles are only present in cells
+ *                              with the given stride from one another in all directions
+ *  - FreeFormulaImpl<>       : apply user-defined functor for calculating density,
+ *                              refer to `picongpu::densityProfiles::IProfile` for interface requirements
+ *  - FromOpenPMDImpl<>       : load density values from a given file, requires openPMD API dependency
+ *
+ * In the end, this file typically defines an alias for each density profile to be used.
+ * These aliases do not have to follow any naming convention, but serve as template parameters for
+ * invocations of `picongpu::particles::CreateDensity<>` in `speciesInitialization.param`.
+ */
+
 #pragma once
 
 #include "picongpu/particles/densityProfiles/profiles.def"
@@ -26,103 +55,7 @@ namespace picongpu
 {
     namespace densityProfiles
     {
-        struct GaussianCloudParamR
-        {
-            /** Profile Formula:
-             *     exponent = |globalCellPos - center| / sigma
-             *     density = e^[ gasFactor * exponent^gasPower ]
-             */
-            static constexpr float_X gasFactor = -0.5;
-            static constexpr float_X gasPower = 2.0;
-
-            /** height of vacuum area on top border
-             *
-             * this vacuum is important because of the laser initialization,
-             * which is done in the first cell of the simulation
-             * unit: cells
-             */
-            static constexpr uint32_t vacuumCellsY = 0;
-
-            /** The central position of the density distribution
-             *  unit: meter
-             */
-            static constexpr floatD_64 center_SI = float3_64(1.724e-5, 9.072e-5, 1.024e-5).shrink<simDim>();
-
-            /** the distance from gasCenter_SI until the density decreases to its 1/e-th part
-             *  unit: meter */
-            static constexpr floatD_64 sigma_SI = float3_64(6.0e-6, 6.0e-6, 6.0e-6).shrink<simDim>();
-        };
-
-        struct GaussianCloudParamL
-        {
-            /** Profile Formula:
-             *     exponent = |globalCellPos - center| / sigma
-             *     density = e^[ gasFactor * exponent^gasPower ]
-             */
-            static constexpr float_X gasFactor = -0.5;
-            static constexpr float_X gasPower = 2.0;
-
-            /** height of vacuum area on top border
-             *
-             * this vacuum is important because of the laser initialization,
-             * which is done in the first cell of the simulation
-             * unit: cells
-             */
-            static constexpr uint32_t vacuumCellsY = 50;
-
-            /** The central position of the density distribution
-             *  unit: meter
-             */
-            static constexpr floatD_64 center_SI = float3_64(1.724e-5, 2.024e-5, 1.024e-5).shrink<simDim>();
-
-            /** the distance from gasCenter_SI until the density decreases to its 1/e-th part
-             *  unit: meter */
-            static constexpr floatD_64 sigma_SI = float3_64(6.0e-6, 6.0e-6, 6.0e-6).shrink<simDim>();
-        };
-
-        /* definition of cloud profile */
-        using GaussianCloudR = GaussianCloudImpl<GaussianCloudParamR>;
-        using GaussianCloudL = GaussianCloudImpl<GaussianCloudParamL>;
-
-        struct FreeFormulaFunctor
-        {
-            /** This formula uses SI quantities only
-             *
-             * The profile will be multiplied by BASE_DENSITY.
-             *
-             * @param position_SI total offset including all slides [in meter]
-             * @param cellSize_SI cell sizes [in meter]
-             *
-             * @return float_X density [normalized to 1.0]
-             */
-            HDINLINE float_X operator()(floatD_64 const& position_SI, float3_64 const& cellSize_SI)
-            {
-                /* add particle in cell at center of Gaussian Cloud profile */
-                float3_64 const position_start_SI(1.024e-5, 9.072e-5, 1.024e-5);
-
-                /* from all cells ... */
-                pmacc::math::UInt64<simDim> const cell_id(position_SI / cellSize_SI.shrink<simDim>());
-
-                /* ... we calculate the corresponding "center" cell to init the particle in ... */
-                pmacc::math::UInt64<simDim> const cell_start(
-                    precisionCast<uint64_t>(
-                        math::floor(position_start_SI.shrink<simDim>() / cellSize_SI.shrink<simDim>())));
-
-                /* ... and only in that center cell the density is 1.0, outside zero */
-                bool isStartCell = true;
-                for(uint64_t d = 0; d < simDim; ++d)
-                    if(cell_id[d] != cell_start[d])
-                        isStartCell = false;
-
-                if(isStartCell)
-                    return 1.0;
-
-                return 0.0;
-            }
-        };
-
-        /* definition of free formula profile */
-        using FreeFormula = FreeFormulaImpl<FreeFormulaFunctor>;
-
+        /* definition of homogenous profile */
+        using Homogenous = HomogenousImpl;
     } // namespace densityProfiles
 } // namespace picongpu

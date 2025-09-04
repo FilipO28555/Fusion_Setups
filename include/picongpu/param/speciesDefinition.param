@@ -109,6 +109,22 @@ namespace picongpu
     /* define species tritons */
     using PIC_Tritons = Particles<PMACC_CSTRING("t"), ParticleFlagsTritons, DefaultParticleAttributes>;
 
+    /*--------------------------- He3 --------------------------------------*/
+
+    /* ratio relative to base charge and base mass */
+    value_identifier(float_X, MassRatioHe3, 3.0160293191*amu);
+    value_identifier(float_X, ChargeRatioHe3, 2.0);
+
+    using ParticleFlagsHe3 = MakeSeq_t<
+        particlePusher<UsedParticlePusher>,
+        shape<UsedParticleShape>,
+        interpolation<UsedField2Particle>,
+        massRatio<MassRatioHe3>,
+        chargeRatio<ChargeRatioHe3>>;
+
+    /* define species He3 */
+    using PIC_He3 = Particles<PMACC_CSTRING("He3"), ParticleFlagsHe3, DefaultParticleAttributes>;
+
     /*--------------------------- He4 --------------------------------------*/
 
     /* ratio relative to base charge and base mass */
@@ -127,7 +143,7 @@ namespace picongpu
 
     /*########################### end species ####################################*/
 
-    using VectorAllSpecies = MakeSeq_t<PIC_Electrons, PIC_Neutrons, PIC_Deuterons, PIC_Tritons, PIC_He4>;
+    using VectorAllSpecies = MakeSeq_t<PIC_Electrons, PIC_Neutrons, PIC_Deuterons, PIC_Tritons, PIC_He3, PIC_He4>;
 
 } // namespace picongpu
 
