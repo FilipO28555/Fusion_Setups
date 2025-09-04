@@ -40,10 +40,8 @@ namespace picongpu
          */
         using InitPipeline = pmacc::mp_list<
             CreateDensity<densityProfiles::FreeFormula, startPosition::OnePosition, PIC_Deuterons>,
-            CreateDensity<densityProfiles::FreeFormula, startPosition::OnePosition, PIC_Tritons>,
 
-            Manipulate<manipulators::AssignYDriftPositive, PIC_Deuterons>,
-            Manipulate<manipulators::AssignYDriftNegative, PIC_Tritons>>;
+            Manipulate<manipulators::AssignDriftPlusMinus, PIC_Deuterons>>;
 
     } // namespace particles
 } // namespace picongpu

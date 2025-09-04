@@ -42,7 +42,6 @@ namespace picongpu
         // note: this specific setting allows all kinds of weightings > 0.0
         constexpr float_X MIN_WEIGHTING = std::numeric_limits<float_X>::min();
 
-
         namespace manipulators
         {
             /** Define Lorentz factor of initial particle drift. */
@@ -56,10 +55,10 @@ namespace picongpu
             /** Define Lorentz factor of initial particle drift. */
             struct DriftParamPositive
             {
-                static constexpr float_64 gamma = 4.01;
+                static constexpr float_64 gamma = 1.0001;
                 /** Define initial particle drift direction vector.
                  */
-                static constexpr auto driftDirection = float3_X(0.0, 2.0,-1);
+                static constexpr auto driftDirection = float3_X(0.0, 1.0, 0.0);
             };
 
             /** Definition of manipulator that assigns a drift in X
@@ -67,6 +66,7 @@ namespace picongpu
              */
             using AssignYDriftNegative = unary::Drift<DriftParamNegative, pmacc::math::operation::Assign>;
             using AssignYDriftPositive = unary::Drift<DriftParamPositive, pmacc::math::operation::Assign>;
+            using AssignDriftPlusMinus = unary::Drift2DifferentDir<DriftParamPositive, pmacc::math::operation::Assign>;
 
         } // namespace manipulators
 

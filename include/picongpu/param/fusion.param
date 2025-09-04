@@ -46,18 +46,18 @@ namespace picongpu
             // not ideal, better would be to combine filters with an AND but it is ok
 
 
-            struct DT
+            struct DD
             {
 
                 using reactants = pmacc::mp_list<
-                    Pair<PIC_Tritons, PIC_Deuterons>
+                    Pair<PIC_Deuterons, PIC_Deuterons>
                     >;
 
                 using products = pmacc::mp_list<
-                    Pair<PIC_Neutrons, PIC_He4>
+                    Pair<PIC_Neutrons, PIC_He3>
                     >;
                 
-                    
+                    // old params from DT fusion
                     struct Params
                     {
                         static constexpr float_X BG = 34.3827_X;
@@ -83,9 +83,9 @@ namespace picongpu
              * the functors are called in order (from first to last functor)
              */
             using FusionPipeline = pmacc::mp_list<
-                Collider<DT::ColliderFunctor, DT::reactants, DT::products, OneFilter<filter::All>>>;
+                Collider<DD::ColliderFunctor, DD::reactants, DD::products, OneFilter<filter::All>>>;
 
-            // using FusionPipeline = pmacc::mp_list<ColliderFromStruct<DT>>;
+            // using FusionPipeline = pmacc::mp_list<ColliderFromStruct<DD>>;
 
             /** Chunk size used for cell list allocations.
              *
