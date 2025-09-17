@@ -38,10 +38,13 @@ namespace picongpu
          *
          * the functors are called in order (from first to last functor)
          */
-        using InitPipeline = pmacc::mp_list<
+        using InitPipeline = pmacc::mp_list< // first half
             CreateDensity<densityProfiles::Homogenous, startPosition::Random, PIC_Deuterons>,
-
-            Manipulate<manipulators::AssignDriftPlusMinus, PIC_Deuterons>>;
+            Manipulate<manipulators::AssignDriftOnceNegative, PIC_Deuterons>,
+                                            // second half
+            CreateDensity<densityProfiles::Homogenous, startPosition::Random, PIC_Deuterons>,
+            Manipulate<manipulators::AssignDriftOncePositive, PIC_Deuterons>
+            >;
 
     } // namespace particles
 } // namespace picongpu

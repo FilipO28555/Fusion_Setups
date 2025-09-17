@@ -31,13 +31,15 @@
 namespace picongpu
 {
 /*########################### define particle attributes #####################*/
+    // value_identifier(bool, DriftFlag, false); // flag to check if drift was applied
 
     /** describe attributes of a particle*/
     using DefaultParticleAttributes = MakeSeq_t<
         position<position_pic>,
         momentum,
         weighting,
-        particleId
+        particleId,
+        driftFlag<DriftFlag>
         >;
 
     /*########################### end particle attributes ########################*/
@@ -50,6 +52,7 @@ namespace picongpu
     /* ratio relative to base charge and base mass */
     value_identifier(float_X, MassRatioElectrons, 1.0);
     value_identifier(float_X, ChargeRatioElectrons, -1.0);
+    // value_identifier(bool, DriftFlagElectrons, false); // flag to check if drift was applied
 
     using ParticleFlagsElectrons = MakeSeq_t<
         particlePusher<UsedParticlePusher>,
@@ -57,6 +60,7 @@ namespace picongpu
         interpolation<UsedField2Particle>,
         massRatio<MassRatioElectrons>,
         chargeRatio<ChargeRatioElectrons>>;
+        // driftFlag<DriftFlagElectrons>>;
 
     /* define species electrons */
     using PIC_Electrons = Particles<PMACC_CSTRING("e"), ParticleFlagsElectrons, DefaultParticleAttributes>;
@@ -66,6 +70,7 @@ namespace picongpu
     /* ratio relative to base charge and base mass */
     value_identifier(float_X, MassRatioNeutrons, 1.00866491595*amu);
     value_identifier(float_X, ChargeRatioNeutrons, 0.0);
+    // value_identifier(bool, DriftFlagNeutrons, false); // flag to check if drift was applied
 
     using ParticleFlagsNeutrons = MakeSeq_t<
         particlePusher<UsedParticlePusher>,
@@ -73,15 +78,36 @@ namespace picongpu
         interpolation<UsedField2Particle>,
         massRatio<MassRatioNeutrons>,
         chargeRatio<ChargeRatioNeutrons>>;
+        // driftFlag<DriftFlagNeutrons>>;
 
     /* define species neutrons */
     using PIC_Neutrons = Particles<PMACC_CSTRING("n"), ParticleFlagsNeutrons, DefaultParticleAttributes>;
+
+    /*--------------------------- Protons --------------------------------------*/
+
+    /* ratio relative to base charge and base mass */
+    value_identifier(float_X, MassRatioProtons, 1.007276466812*amu);
+    value_identifier(float_X, ChargeRatioProtons, 1.0);
+    // value_identifier(bool, DriftFlagProtons, false); // flag to check if drift was applied
+
+
+    using ParticleFlagsProtons = MakeSeq_t<
+        particlePusher<UsedParticlePusher>,
+        shape<UsedParticleShape>,
+        interpolation<UsedField2Particle>,
+        massRatio<MassRatioProtons>,
+        chargeRatio<ChargeRatioProtons>>;
+        // driftFlag<DriftFlagProtons>>;
+
+    /* define species protons */
+    using PIC_Protons = Particles<PMACC_CSTRING("p"), ParticleFlagsProtons, DefaultParticleAttributes>;
 
     /*--------------------------- Deuterons --------------------------------------*/
 
     /* ratio relative to base charge and base mass */
     value_identifier(float_X, MassRatioDeuterons, 2.01410177812*amu);
     value_identifier(float_X, ChargeRatioDeuterons, 1.0);
+    // value_identifier(bool, DriftFlagDeuterons, false); // flag to check if drift was applied
 
     using ParticleFlagsDeuterons = MakeSeq_t<
         particlePusher<UsedParticlePusher>,
@@ -89,6 +115,7 @@ namespace picongpu
         interpolation<UsedField2Particle>,
         massRatio<MassRatioDeuterons>,
         chargeRatio<ChargeRatioDeuterons>>;
+        // driftFlag<DriftFlagDeuterons>>;
 
     /* define species deuterons */
     using PIC_Deuterons = Particles<PMACC_CSTRING("d"), ParticleFlagsDeuterons, DefaultParticleAttributes>;
@@ -98,6 +125,7 @@ namespace picongpu
     /* ratio relative to base charge and base mass */
     value_identifier(float_X, MassRatioTritons, 3.0160492779*amu);
     value_identifier(float_X, ChargeRatioTritons, 1.0);
+    // value_identifier(bool, DriftFlagTritons, false); // flag to check if drift was applied
 
     using ParticleFlagsTritons = MakeSeq_t<
         particlePusher<UsedParticlePusher>,
@@ -105,6 +133,7 @@ namespace picongpu
         interpolation<UsedField2Particle>,
         massRatio<MassRatioTritons>,
         chargeRatio<ChargeRatioTritons>>;
+        // driftFlag<DriftFlagTritons>>;
 
     /* define species tritons */
     using PIC_Tritons = Particles<PMACC_CSTRING("t"), ParticleFlagsTritons, DefaultParticleAttributes>;
@@ -114,6 +143,7 @@ namespace picongpu
     /* ratio relative to base charge and base mass */
     value_identifier(float_X, MassRatioHe3, 3.0160293191*amu);
     value_identifier(float_X, ChargeRatioHe3, 2.0);
+    // value_identifier(bool, DriftFlagHe3, false); // flag to check if drift was applied
 
     using ParticleFlagsHe3 = MakeSeq_t<
         particlePusher<UsedParticlePusher>,
@@ -121,6 +151,7 @@ namespace picongpu
         interpolation<UsedField2Particle>,
         massRatio<MassRatioHe3>,
         chargeRatio<ChargeRatioHe3>>;
+        // driftFlag<DriftFlagHe3>>;
 
     /* define species He3 */
     using PIC_He3 = Particles<PMACC_CSTRING("He3"), ParticleFlagsHe3, DefaultParticleAttributes>;
@@ -130,6 +161,7 @@ namespace picongpu
     /* ratio relative to base charge and base mass */
     value_identifier(float_X, MassRatioHe4, 4.00260325413*amu);
     value_identifier(float_X, ChargeRatioHe4, 2.0);
+    // value_identifier(bool, DriftFlagHe4, false); // flag to check if drift was applied
 
     using ParticleFlagsHe4 = MakeSeq_t<
         particlePusher<UsedParticlePusher>,
@@ -137,13 +169,14 @@ namespace picongpu
         interpolation<UsedField2Particle>,
         massRatio<MassRatioHe4>,
         chargeRatio<ChargeRatioHe4>>;
+        // driftFlag<DriftFlagHe4>>;
 
     /* define species He4 */
     using PIC_He4 = Particles<PMACC_CSTRING("He4"), ParticleFlagsHe4, DefaultParticleAttributes>;
 
     /*########################### end species ####################################*/
 
-    using VectorAllSpecies = MakeSeq_t<PIC_Electrons, PIC_Neutrons, PIC_Deuterons, PIC_Tritons, PIC_He3, PIC_He4>;
+    using VectorAllSpecies = MakeSeq_t<PIC_Electrons, PIC_Protons, PIC_Neutrons, PIC_Deuterons, PIC_Tritons, PIC_He3, PIC_He4>;
 
 } // namespace picongpu
 

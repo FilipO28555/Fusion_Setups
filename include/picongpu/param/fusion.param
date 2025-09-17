@@ -76,6 +76,7 @@ namespace picongpu
                 };
 
                 using ColliderFunctor = relativistic::FusionFunctor<Params>;
+                using FilterPair = OneFilter<filter::All>;
             };
 
 
@@ -90,6 +91,8 @@ namespace picongpu
                 using products = pmacc::mp_list<
                     Pair<PIC_Neutrons, PIC_He3>
                     >;
+
+                using FilterPair = OneFilter<filter::All>;
 
                 // Parameters from "D(d,n)3He" column in the provided table.
                 struct Params
@@ -120,6 +123,7 @@ namespace picongpu
                 // Collider<DD::ColliderFunctor, DD::reactants, DD::products, OneFilter<filter::All>>>;
 
             using FusionPipeline = pmacc::mp_list<ColliderFromStruct<DD_nHe3>>;
+            // using FusionPipeline = pmacc::mp_list<ColliderFromStruct<DD_pT>>;
 
             /** Chunk size used for cell list allocations.
              *
