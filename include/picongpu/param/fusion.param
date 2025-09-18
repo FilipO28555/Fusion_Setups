@@ -77,7 +77,7 @@ namespace picongpu
                         static constexpr float_X B4 = 1.728e-4_X;
                     };
 
-                    using ColliderFunctor = relativistic::FusionFunctor<Params>;
+                    using CrossSectionInterpolator = relativistic::FusionFunctor<Params>;
             };
 
 
@@ -86,7 +86,7 @@ namespace picongpu
              * the functors are called in order (from first to last functor)
              */
             using FusionPipeline = pmacc::mp_list<
-                Collider<DT::ColliderFunctor, DT::reactants, DT::products, OneFilter<filter::All>>>;
+                Collider<DT::CrossSectionInterpolator, DT::reactants, DT::products, OneFilter<filter::All>>>;
 
             // using FusionPipeline = pmacc::mp_list<ColliderFromStruct<DT>>;
 
@@ -97,9 +97,10 @@ namespace picongpu
              */
             constexpr uint32_t cellListChunkSize = TYPICAL_PARTICLES_PER_CELL;
             // if weighting of the products were to be less or equal than productMinWeighting we set  Fmult = std::max(1,productWeighting/productMinWeighting);
-            constexpr float_X productMinWeighting = 10;
-            constexpr uint32_t maxFmult = 1e3;
+            constexpr float_X productMinWeighting = 16.1;
+            constexpr uint32_t maxFmult = 1e6;
             constexpr bool debugFusion = false;
+            constexpr bool alwaysFuseQ = false;
         } // namespace fusion
     } // namespace particles
 } // namespace picongpu

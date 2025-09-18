@@ -124,5 +124,8 @@ namespace picongpu
         /* definition of free formula profile */
         using FreeFormula = FreeFormulaImpl<FreeFormulaFunctor>;
 
+        
+        using Homogenous = HomogenousImpl;
+
     } // namespace densityProfiles
 } // namespace picongpu

@@ -5,6 +5,25 @@
 #!/bin/bash
 # This script compiles the project and runs it with the specified configuration.
 # Usage: ./compile_run.sh [folderName]
+
+# Environment setup: Spack and PIConGPU profile (for non-interactive shells)
+# Load Spack shell support (allow override via $SPACK_SETUP)
+SPACK_SETUP=${SPACK_SETUP:-/opt/spack/share/spack/setup-env.sh}
+if [ -f "$SPACK_SETUP" ]; then
+    . "$SPACK_SETUP"
+else
+    echo "Warning: Spack setup script not found at $SPACK_SETUP" >&2
+fi
+# Source user PIConGPU environment profile (loads spack packages, sets PICSRC, etc.)
+if [ -f "$HOME/gpu_a30_picongpu.profile" ]; then
+    # shellcheck disable=SC1090
+    source "$HOME/gpu_a30_picongpu.profile"
+elif [ -f "$(dirname "$0")/../gpu_a30_picongpu.profile" ]; then
+    # fallback if profile is one directory above Fusion_Setups
+    # shellcheck disable=SC1090
+    source "$(dirname "$0")/../gpu_a30_picongpu.profile"
+fi
+
 folderName=${1:-testRun} # Default to 'testRun' if no argument is provided
 
 # if PROJECT is not set

@@ -1,0 +1,62 @@
+PIConGPU: 0.9.0-dev
+  Build-Type: Release
+
+Third party:
+  OS:         Linux-6.8.0-65-generic
+  arch:       x86_64
+  CXX:        GNU (12.2.0)
+  CMake:      3.26.6
+  CUDA:       12.3.52
+  mallocMC:   3.0.0
+  Boost:      1.83.0
+  MPI:        
+    standard: 3.1
+    flavor:   OpenMPI (4.1.5)
+  PNGwriter:  0.7.0
+  openPMD:    0.15.2
+Dimension x: Local grid size is not a multiple of supercell size. Auto adjust from 1 to 8
+Dimension x: Local grid size is not containing at least 3 supercells. Auto adjust from 8 to 24
+Dimension x: Invalid global grid size. Auto adjust from 1 to 24
+Dimension y: Local grid size is not a multiple of supercell size. Auto adjust from 1 to 8
+Dimension y: Local grid size is not containing at least 3 supercells. Auto adjust from 8 to 24
+Dimension y: Invalid global grid size. Auto adjust from 1 to 24
+Dimension z: Local grid size is not a multiple of supercell size. Auto adjust from 1 to 4
+Dimension z: Local grid size is not containing at least 3 supercells. Auto adjust from 4 to 12
+Dimension z: Invalid global grid size. Auto adjust from 1 to 12
+ new grid size (global|local|offset): {24,24,12}|{24,24,12}|{0,0,0}
+PIConGPUVerbose PHYSICS(1) | Sliding Window is OFF
+PIConGPUVerbose PHYSICS(1) | used Random Number Generator: RNGProvider3XorMin seed: 42
+PIConGPUVerbose PHYSICS(1) | Field solver condition: c * dt <= 1.96555 ? (c * dt = 1)
+PIConGPUVerbose PHYSICS(1) | Resolving plasma oscillations?
+   Estimates are based on DensityRatio to BASE_DENSITY of each species
+   (see: density.param, speciesDefinition.param).
+   It does not cover other forms of initialization
+PIConGPUVerbose PHYSICS(1) | species e: omega_p * dt <= 0.1 ? (omega_p * dt = 0.582181)
+PIConGPUVerbose PHYSICS(1) | species n: omega_p * dt <= 0.1 ? (omega_p * dt = 0)
+PIConGPUVerbose PHYSICS(1) | species d: omega_p * dt <= 0.1 ? (omega_p * dt = 0.00960971)
+PIConGPUVerbose PHYSICS(1) | species t: omega_p * dt <= 0.1 ? (omega_p * dt = 0.00785176)
+PIConGPUVerbose PHYSICS(1) | species He4: omega_p * dt <= 0.1 ? (omega_p * dt = 0.0136315)
+PIConGPUVerbose PHYSICS(1) | macro particles per device: 345600
+PIConGPUVerbose PHYSICS(1) | typical macro particle weighting: 2.6624e+06
+PIConGPUVerbose PHYSICS(1) | sim.unit.speed() 2.99792e+08
+PIConGPUVerbose PHYSICS(1) | sim.unit.time() 6.4e-17
+PIConGPUVerbose PHYSICS(1) | sim.unit.length() 1.91867e-08
+PIConGPUVerbose PHYSICS(1) | sim.unit.mass() 2.42528e-24
+PIConGPUVerbose PHYSICS(1) | sim.unit.charge() 4.26564e-13
+PIConGPUVerbose PHYSICS(1) | sim.unit.eField() 2.6633e+13
+PIConGPUVerbose PHYSICS(1) | sim.unit.bField() 88838
+PIConGPUVerbose PHYSICS(1) | sim.unit.energy() 2.17974e-07
+PIConGPUVerbose PHYSICS(1) | Debye length resolution check skipped due to no electron species found
+
+initialization time: 15sec 463msec = 15.463 sec
+  0 % =        0 | time elapsed:                    5msec | avg time per step:   0msec
+  5 % =      375 | time elapsed:             6sec  35msec | avg time per step:  13msec
+ 10 % =      750 | time elapsed:            12sec  57msec | avg time per step:  13msec
+ 15 % =     1125 | time elapsed:            18sec  80msec | avg time per step:  13msec
+ 20 % =     1500 | time elapsed:            24sec 100msec | avg time per step:  13msec
+ 25 % =     1875 | time elapsed:            30sec 122msec | avg time per step:  13msec
+ 30 % =     2250 | time elapsed:            36sec 144msec | avg time per step:  13msec
+ 35 % =     2625 | time elapsed:            42sec 176msec | avg time per step:  13msec
+ 40 % =     3000 | time elapsed:            48sec 200msec | avg time per step:  13msec
+ 45 % =     3375 | time elapsed:            54sec 230msec | avg time per step:  13msec
+ 50 % =     3750 | time elapsed:       1min  0sec 259msec | avg time per step:  13msec
