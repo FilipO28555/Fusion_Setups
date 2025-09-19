@@ -48,17 +48,17 @@ namespace picongpu
     {
         /** Duration of one timestep
          *  unit: seconds */
-        constexpr float_64 DELTA_T_SI = 6.011490e-18; // 0.1 fs
+        constexpr float_64 DELTA_T_SI = 6.027227e-16; // 0.1 fs
 
         /** equals X
          *  unit: meter */
-        constexpr float_64 CELL_WIDTH_SI = 4.065502e-08;
+        constexpr float_64 CELL_WIDTH_SI = 1.173840e-07;
         /** equals Y - the laser & moving window propagation direction
          *  unit: meter */
-        constexpr float_64 CELL_HEIGHT_SI = 2.082551e-07;
+        constexpr float_64 CELL_HEIGHT_SI = 7.835688e-07;
         /** equals Z
          *  unit: meter */
-        constexpr float_64 CELL_DEPTH_SI = 7.055937e-07;
+        constexpr float_64 CELL_DEPTH_SI = 6.606875e-07;
 
         /** Base density in particles per m^3 in the density profiles.
          *
@@ -72,7 +72,7 @@ namespace picongpu
         /* one particle per cell with weighting 1.0 */
         constexpr float_64 BASE_DENSITY_SI = 1.0 / (CELL_WIDTH_SI * CELL_HEIGHT_SI * CELL_DEPTH_SI);
 #else
-        constexpr float_64 BASE_DENSITY_SI = 4.433823e+29; // 1e28 particles per m^3
+        constexpr float_64 BASE_DENSITY_SI = 1.757436e+29; // 1e28 particles per m^3
 #endif
     } // namespace SI
 
@@ -81,8 +81,8 @@ namespace picongpu
      * Used internally for unit normalization.
      */
 #ifdef PARAM_SINGLE_PARTICLE
-    constexpr uint32_t TYPICAL_PARTICLES_PER_CELL = 5;
+    constexpr uint32_t TYPICAL_PARTICLES_PER_CELL = 3;
 #else
-    constexpr uint32_t TYPICAL_PARTICLES_PER_CELL = 5;
+    constexpr uint32_t TYPICAL_PARTICLES_PER_CELL = 3;
 #endif
 } // namespace picongpu
