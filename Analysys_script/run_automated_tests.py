@@ -62,6 +62,7 @@ RESULT_SCHEMA = [
     "timestamp",
     "tag",
     "sample_index",
+    "repeat_index",
     "folder",
     "gamma",
     "dt",
@@ -372,9 +373,10 @@ def parse_params_from_destination_or_source(run_folder: str):
 # PPC sweep executor
 # -----------------------------
 
-def run_ppc_sweep(base_samples: int, ppc_min: int, ppc_max: int, grid, steps, tag: str, min_events: float, results_csv: str, no_plot: bool):
+def run_ppc_sweep(base_samples: int, ppc_min: int, ppc_max: int, grid, steps, tag: str, min_events: float, results_csv: str, no_plot: bool, ppc_repeats: int = 1):
     """Sample base parameter sets (meeting min_events) and for each run PPC in [ppc_min, ppc_max].
-    Note: Changing TYPICAL_PARTICLES_PER_CELL requires recompilation, so we always recompile per run.
+    For each PPC value, repeat the same parameters ppc_repeats times without recompiling.
+    Note: Changing TYPICAL_PARTICLES_PER_CELL requires recompilation, so we compile once per PPC value.
     """
     for sidx in range(1, base_samples + 1):
         print(f"\n=== Sampling base parameters set {sidx}/{base_samples} ===")
@@ -388,13 +390,11 @@ def run_ppc_sweep(base_samples: int, ppc_min: int, ppc_max: int, grid, steps, ta
             f"  base_density={sample['base_density']:.3e} 1/m^3"
         )
 
-        # Sweep PPC values (compile each run)
+        # Sweep PPC values (compile once per PPC, then repeat M times)
         for ppc in range(int(ppc_min), int(ppc_max) + 1):
-            stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            folder_name = f"{tag or 'ppcsweep'}_s{sidx}_ppc{ppc}_{stamp}"
-            print(f"\n--- Running base set {sidx}, PPC={ppc} -> {folder_name} ---")
+            print(f"\n--- Running base set {sidx}, PPC={ppc} ({ppc_repeats} repeats) ---")
 
-            # Apply params for this run (only PPC varies)
+            # Apply params for this PPC value (only PPC varies from previous)
             set_particle_gamma(float(sample['gamma']))
             set_simulation_params(
                 delta_t=float(sample['dt']),
@@ -405,8 +405,7 @@ def run_ppc_sweep(base_samples: int, ppc_min: int, ppc_max: int, grid, steps, ta
                 ppc=int(ppc),
             )
 
-            # Read-back from source files and compute prediction for CSV consistency
-            # (Use the sampled parameters directly)
+            # Compute prediction once for this PPC value
             events_pred_src, details_src = predict_total_events(
                 sample['gamma'],
                 sample['base_density'],
@@ -418,46 +417,54 @@ def run_ppc_sweep(base_samples: int, ppc_min: int, ppc_max: int, grid, steps, ta
                 steps,
             )
 
-            # Run simulation: always compile (no -r) since PPC/params changed
-            run_simulation(folder_name, reuse_build=False)
+            # Run M repeats at this PPC value
+            for repeat_idx in range(1, ppc_repeats + 1):
+                stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                folder_name = f"{tag or 'ppcsweep'}_s{sidx}_ppc{ppc}_r{repeat_idx}_{stamp}"
+                print(f"\n  Repeat {repeat_idx}/{ppc_repeats} -> {folder_name}")
 
-            # Read destination params and results
-            run_folder = get_run_folder(folder_name)
-            dest_params = parse_params_from_destination_or_source(run_folder)
-            he4_count, he4_path = read_he4_final_count(run_folder)
+                # First run: compile (no -r), subsequent runs: reuse build (-r)
+                reuse_build = (repeat_idx > 1)
+                run_simulation(folder_name, reuse_build=reuse_build)
 
-            row = {
-                "timestamp": stamp,
-                "tag": tag or "ppcsweep",
-                "sample_index": sidx,
-                "folder": folder_name,
-                "gamma": float(dest_params["gamma"]),
-                "dt": float(dest_params["DELTA_T_SI"]),
-                "cell_w": float(dest_params["CELL_WIDTH_SI"]),
-                "cell_h": float(dest_params["CELL_HEIGHT_SI"]),
-                "cell_d": float(dest_params["CELL_DEPTH_SI"]),
-                "base_density": float(dest_params["BASE_DENSITY_SI"]),
-                "ppc": int(ppc),
-                "grid_x": int(grid[0]),
-                "grid_y": int(grid[1]),
-                "grid_z": int(grid[2]),
-                "steps": int(steps),
-                "predicted_events": float(events_pred_src),
-                "measured_He4_final": float(he4_count),
-                "E_rel_keV": float(details_src["E_rel_keV"]),
-                "v_rel": float(details_src["v_rel"]),
-                "sigma_m2": float(details_src["sigma_m2"]),
-                "volume": float(details_src["volume"]),
-                "total_time": float(details_src["time"]),
-                "he4_file": he4_path,
-            }
-            append_results_csv(row, results_csv)
-            print(f"Run saved. Measured He4={he4_count:.3e}. CSV updated: {results_csv}")
+                # Read destination params and results
+                run_folder = get_run_folder(folder_name)
+                dest_params = parse_params_from_destination_or_source(run_folder)
+                he4_count, he4_path = read_he4_final_count(run_folder)
 
-            if not no_plot:
-                out_png = os.path.join(RESULTS_DIR, "predicted_vs_measured_by_ppc.png")
-                plot_results_by_ppc(results_csv, out_png)
-                print(f"Summary plot saved to {out_png}")
+                row = {
+                    "timestamp": stamp,
+                    "tag": tag or "ppcsweep",
+                    "sample_index": sidx,
+                    "repeat_index": repeat_idx,
+                    "folder": folder_name,
+                    "gamma": float(dest_params["gamma"]),
+                    "dt": float(dest_params["DELTA_T_SI"]),
+                    "cell_w": float(dest_params["CELL_WIDTH_SI"]),
+                    "cell_h": float(dest_params["CELL_HEIGHT_SI"]),
+                    "cell_d": float(dest_params["CELL_DEPTH_SI"]),
+                    "base_density": float(dest_params["BASE_DENSITY_SI"]),
+                    "ppc": int(ppc),
+                    "grid_x": int(grid[0]),
+                    "grid_y": int(grid[1]),
+                    "grid_z": int(grid[2]),
+                    "steps": int(steps),
+                    "predicted_events": float(events_pred_src),
+                    "measured_He4_final": float(he4_count),
+                    "E_rel_keV": float(details_src["E_rel_keV"]),
+                    "v_rel": float(details_src["v_rel"]),
+                    "sigma_m2": float(details_src["sigma_m2"]),
+                    "volume": float(details_src["volume"]),
+                    "total_time": float(details_src["time"]),
+                    "he4_file": he4_path,
+                }
+                append_results_csv(row, results_csv)
+                print(f"  Run saved. Measured He4={he4_count:.3e}. CSV updated: {results_csv}")
+
+                if not no_plot:
+                    out_png = os.path.join(RESULTS_DIR, "predicted_vs_measured_by_ppc.png")
+                    plot_results_by_ppc(results_csv, out_png)
+                    print(f"  Summary plot saved to {out_png}")
 
 # -----------------------------
 # Main CLI
@@ -476,6 +483,7 @@ def main():
     parser.add_argument("--base-samples", type=int, default=0, help="Number of base parameter sets to sample and sweep over PPC")
     parser.add_argument("--ppc-min", type=int, default=None, help="Minimum PPC for sweep (inclusive)")
     parser.add_argument("--ppc-max", type=int, default=None, help="Maximum PPC for sweep (inclusive)")
+    parser.add_argument("--ppc-repeats", type=int, default=1, help="Number of times to repeat the same parameters at each PPC value (without recompiling)")
     args = parser.parse_args()
 
     grid, steps = parse_cfg_grid_steps(CFG_FILE)
@@ -495,6 +503,7 @@ def main():
             min_events=args.min_events,
             results_csv=results_csv,
             no_plot=args.no_plot,
+            ppc_repeats=args.ppc_repeats,
         )
         return
 
