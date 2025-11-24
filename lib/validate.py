@@ -66,6 +66,31 @@ def totalRate(n1, n2, sigma_m2, v_rel, vol):
     """Calculates total reactions per second in a given volume."""
     return n1 * n2 * sigma_m2 * v_rel * vol
 
+
+def read_particle_count(run_folder: str, particle_name: str):
+    """
+    Reads the final particle count from the energy histogram file.
+    
+    Args:
+        run_folder: Path to the simulation run folder
+        particle_name: Name of the particle (e.g., 'd', 't', 'He4', 'n')
+    
+    Returns:
+        tuple: (final_count, file_path)
+    """
+    import pandas as pd
+    filename = f"{particle_name}_energyHistogram_all.dat"
+    path = os.path.join(run_folder, "simOutput", filename)
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"{filename} not found in {path}")
+    df = pd.read_csv(path, sep=r"\s+", comment="#", header=None, engine="python")
+    final_total = float(df.iloc[-1, -1])
+    return final_total, path
+
+def read_he4_final_count(run_folder: str):
+    """Legacy function for backward compatibility."""
+    return read_particle_count(run_folder, "He4")
+
 # =============================================================================
 # Main Simulation Function
 # =============================================================================
@@ -155,43 +180,25 @@ def main():
     if len(sys.argv) > 1:
         data_path = sys.argv[1]
         
-        # Define all particle data files
-        particle_files = {
-            'd': os.path.join(data_path, "d_macroParticlesCount.dat"),
-            't': os.path.join(data_path, "t_macroParticlesCount.dat"),
-            'He4': os.path.join(data_path, "He4_macroParticlesCount.dat"),
-            'n': os.path.join(data_path, "n_macroParticlesCount.dat")
-        }
-        
-        # Check if all files exist
-        missing_files = [name for name, path in particle_files.items() if not os.path.exists(path)]
-        if missing_files:
-            print(f"❌ ERROR: Missing data files for: {', '.join(missing_files)}")
-            return 1
-        
         print(f"Reading simulation data from: {data_path}")
         
         try:
-            # Read all particle counts
-            particle_data = {}
-            for name, filepath in particle_files.items():
-                data = np.loadtxt(filepath, comments='#')
-                particle_data[name] = data
+            import pandas as pd  # Import needed for read_particle_count
             
-            # Extract initial (step 0) and final (step TIMESTEPS) counts
+            # Read all particle counts from energy histogram files
             counts_initial = {}
             counts_final = {}
+            particle_names = ['d', 't', 'He4', 'n']
             
-            for name, data in particle_data.items():
-                step_0 = data[data[:, 0] == 0]
-                step_final = data[data[:, 0] == TIMESTEPS]
-                
-                if len(step_0) == 0 or len(step_final) == 0:
-                    print(f"❌ ERROR: Missing step 0 or {TIMESTEPS} data for {name}")
+            for name in particle_names:
+                try:
+                    final_count, file_path = read_particle_count(data_path, name)
+                    counts_initial[name] = 0  # Assuming no products initially (He4, n) and reactants don't deplete significantly
+                    counts_final[name] = final_count
+                    print(f"Read {name} count from: {os.path.basename(file_path)}")
+                except FileNotFoundError as e:
+                    print(f"❌ ERROR: {e}")
                     return 1
-                
-                counts_initial[name] = step_0[0, 1]
-                counts_final[name] = step_final[0, 1]
             
             # Display particle counts
             print("\nParticle Counts:")
