@@ -26,10 +26,6 @@
 #include <pmacc/meta/conversion/MakeSeq.hpp>
 
 
-#ifndef PARAM_DYNAMIC_LOG
-#    define PARAM_DYNAMIC_LOG 0
-#endif
-
 namespace picongpu
 {
     namespace particles
@@ -98,7 +94,7 @@ namespace picongpu
             constexpr float_X productMinWeighting = 16.1;
             constexpr uint32_t maxFmult = 1e6;
             constexpr bool debugFusion = false;
-            constexpr bool alwaysFuseQ = false;
+            constexpr bool alwaysFuseQ = true;
         } // namespace fusion
     } // namespace particles
 } // namespace picongpu

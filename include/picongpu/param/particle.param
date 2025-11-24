@@ -39,16 +39,11 @@ namespace picongpu
 {
     namespace particles
     {
-#ifdef PARAM_SINGLE_PARTICLE
         /** a particle with a weighting below MIN_WEIGHTING will not
          *      be created / will be deleted
          *
          *  unit: none */
-        // note: this specific setting allows all kinds of weightings > 0.0
-        constexpr float_X MIN_WEIGHTING = std::numeric_limits<float_X>::min();
-#else
-        constexpr float_X MIN_WEIGHTING = 1000.0;
-#endif
+        constexpr float_X MIN_WEIGHTING = 1.0;
 
         namespace manipulators
         {

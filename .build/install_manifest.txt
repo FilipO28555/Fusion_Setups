@@ -1,0 +1,10 @@
+/home/filipo/Fusion_Setups/bin/picongpu
+/home/filipo/Fusion_Setups/bin/pic-edit
+/home/filipo/Fusion_Setups/bin/pic-configure
+/home/filipo/Fusion_Setups/bin/pic-compile
+/home/filipo/Fusion_Setups/bin/picongpu-completion.bash
+/home/filipo/Fusion_Setups/bin/egetopt
+/home/filipo/Fusion_Setups/bin/pic-create
+/home/filipo/Fusion_Setups/bin/tbg
+/home/filipo/Fusion_Setups/bin/pic-build
+/home/filipo/Fusion_Setups/bin/cuda_memtest.sh

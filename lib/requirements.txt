@@ -1,5 +1,0 @@
-numpy
-# Optional dependencies:
-# scipy
-# h5py
-# openpmd_api
