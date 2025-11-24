@@ -127,7 +127,9 @@ namespace picongpu
 
     /*########################### end species ####################################*/
 
-    using VectorAllSpecies = MakeSeq_t<PIC_Electrons, PIC_Neutrons, PIC_Deuterons, PIC_Tritons, PIC_He4>;
+    // Note: Electrons removed from VectorAllSpecies for pure D-T fusion simulation
+    // to avoid CFL issues with high-velocity electrons
+    using VectorAllSpecies = MakeSeq_t<PIC_Neutrons, PIC_Deuterons, PIC_Tritons, PIC_He4>;
 
 } // namespace picongpu
 
