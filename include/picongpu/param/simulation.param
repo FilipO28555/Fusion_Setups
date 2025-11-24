@@ -48,7 +48,7 @@ namespace picongpu
     {
         /** Duration of one timestep
          *  unit: seconds */
-        constexpr float_64 DELTA_T_SI = 1e-18; // 0.1 fs
+        constexpr float_64 DELTA_T_SI = 1e-17; // 0.1 fs
 
         /** equals X
          *  unit: meter */
@@ -68,7 +68,7 @@ namespace picongpu
          *
          * unit: ELEMENTS/m^3
          */
-        constexpr float_64 BASE_DENSITY_SI = 1e31; // 1e31 particles per m^3
+        constexpr float_64 BASE_DENSITY_SI = 1e29; // 1e31 particles per m^3
     } // namespace SI
 
     /** (Approximate) Number of maximum macro-particles per cell.
