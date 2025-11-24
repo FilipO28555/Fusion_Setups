@@ -47,7 +47,7 @@ namespace picongpu
             {
 
                 using reactants = pmacc::mp_list<
-                    Pair<PIC_Tritons, PIC_Deuterons>
+                    Pair<PIC_Deuterons, PIC_Tritons>
                     >;
 
                 using products = pmacc::mp_list<
@@ -94,11 +94,11 @@ namespace picongpu
              * multiple of this value to store a cell list of particle IDs. The value must be non zero.
              */
             constexpr uint32_t cellListChunkSize = TYPICAL_PARTICLES_PER_CELL;
-            // if weighting of the products were to be less or equal than productMinWeighting we set  Fmult = std::max(1,productWeighting/productMinWeighting);
-            constexpr float_X productMinWeighting = 16.1;
-            constexpr uint32_t maxFmult = 1e6;
-            constexpr bool debugFusion = false;
-            constexpr bool alwaysFuseQ = false;
+            /** Fusion Multiplier - factor to increase fusion probability but decreasing product weights accordingly
+             */            
+            constexpr float_X Fmult = 1e3_X;
+            constexpr bool debugFusion = true;
+            constexpr bool alwaysFuseQ = true;
         } // namespace fusion
     } // namespace particles
 } // namespace picongpu
