@@ -5,8 +5,6 @@ build/
 **/.build/
 
 # Binary/executable directories
-bin/
-**/bin/
 
 # pycache
 __pycache__/
