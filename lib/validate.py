@@ -67,7 +67,7 @@ def totalRate(n1, n2, sigma_m2, v_rel, vol):
     return n1 * n2 * sigma_m2 * v_rel * vol
 
 
-def read_particle_count(run_folder: str, particle_name: str):
+def read_particle_count(run_folder: str, particle_name: str, final: bool = True):
     """
     Reads the final particle count from the energy histogram file.
     
@@ -80,11 +80,14 @@ def read_particle_count(run_folder: str, particle_name: str):
     """
     import pandas as pd
     filename = f"{particle_name}_energyHistogram_all.dat"
-    path = os.path.join(run_folder, "simOutput", filename)
+    path = os.path.join(run_folder, filename)
     if not os.path.isfile(path):
         raise FileNotFoundError(f"{filename} not found in {path}")
     df = pd.read_csv(path, sep=r"\s+", comment="#", header=None, engine="python")
-    final_total = float(df.iloc[-1, -1])
+    if not final:
+        final_total = float(df.iloc[0, -1])
+    else:
+        final_total = float(df.iloc[-1, -1])
     return final_total, path
 
 def read_he4_final_count(run_folder: str):
@@ -104,7 +107,7 @@ def main():
     # --- 1. Define Simulation and Particle Parameters ---
     n_D = 1e31  # Deuterium density (particles/m^3)
     n_T = 1e31  # Tritium density (particles/m^3)
-    gamma = 1.1 # Lorentz factor for both clouds
+    gamma = 1.001 # Lorentz factor for both clouds
     
     # Particle masses
     m_D = const.value('deuteron mass in u') # Unified atomic mass units
@@ -118,7 +121,7 @@ def main():
     
     # Simulation time
     DELTA_T = 1e-15 # Timestep in seconds
-    TIMESTEPS = 50 # Number of timesteps to simulate
+    TIMESTEPS = 30 # Number of timesteps to simulate
 
     # --- 2. Relativistic Kinematics Calculation ---
     # Calculate velocity of particles from gamma
@@ -193,7 +196,8 @@ def main():
             for name in particle_names:
                 try:
                     final_count, file_path = read_particle_count(data_path, name)
-                    counts_initial[name] = 0  # Assuming no products initially (He4, n) and reactants don't deplete significantly
+                    initial_count, _ = read_particle_count(data_path, name, final=False)
+                    counts_initial[name] = initial_count
                     counts_final[name] = final_count
                     print(f"Read {name} count from: {os.path.basename(file_path)}")
                 except FileNotFoundError as e:

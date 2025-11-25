@@ -84,8 +84,8 @@ namespace picongpu
         static constexpr uint32_t BYTES_EXCHANGE_X = 50 * 1024 * 1024; // 4 MiB
         static constexpr uint32_t BYTES_EXCHANGE_Y = 50 * 1024 * 1024; // 12 MiB
         static constexpr uint32_t BYTES_EXCHANGE_Z = 50 * 1024 * 1024; // 4 MiB
-        static constexpr uint32_t BYTES_EDGES = 32 * 1024; // 32 kiB
-        static constexpr uint32_t BYTES_CORNER = 8 * 1024; // 8 kiB
+        static constexpr uint32_t BYTES_EDGES = 64 * 1024; // 32 kiB
+        static constexpr uint32_t BYTES_CORNER = 16 * 1024; // 8 kiB
 
         /** Reference local domain size
          *
