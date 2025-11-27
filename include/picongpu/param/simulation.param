@@ -68,12 +68,12 @@ namespace picongpu
          *
          * unit: ELEMENTS/m^3
          */
-        constexpr float_64 BASE_DENSITY_SI = 1e31; // 1e31 particles per m^3
+        constexpr float_64 BASE_DENSITY_SI = 1e28; // 1e28 particles per m^3
     } // namespace SI
 
     /** (Approximate) Number of maximum macro-particles per cell.
      *
      * Used internally for unit normalization.
      */
-    constexpr uint32_t TYPICAL_PARTICLES_PER_CELL = 80;
+    constexpr uint32_t TYPICAL_PARTICLES_PER_CELL = 10;
 } // namespace picongpu

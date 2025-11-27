@@ -85,6 +85,7 @@ namespace picongpu
              */
             using FusionPipeline = pmacc::mp_list<
                 Collider<DT::CrossSectionInterpolator, DT::reactants, DT::products, OneFilter<filter::All>>>;
+            // using FusionPipeline = pmacc::mp_list<>;
 
             // using FusionPipeline = pmacc::mp_list<ColliderFromStruct<DT>>;
 
@@ -94,8 +95,7 @@ namespace picongpu
              * multiple of this value to store a cell list of particle IDs. The value must be non zero.
              */
             constexpr uint32_t cellListChunkSize = TYPICAL_PARTICLES_PER_CELL;
-            // if weighting of the products were to be less or equal than productMinWeighting we set  Fmult = std::max(1,productWeighting/productMinWeighting);
-            constexpr float_X productMinWeighting = 32.1_X;
+            
             constexpr float_X maxFmult = 1e5_X;
             constexpr bool debugFusion = false;
             constexpr bool alwaysFuseQ = false;

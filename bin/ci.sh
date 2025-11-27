@@ -92,20 +92,20 @@ echo "Build setup!"
 pwd
 echo
 echo
-pic-build
+pic-build -j 10
 ret_build=$?
 if [ $ret_build -eq 0 ] ; then
   cd $simPath
   echo "Run setup!"
   
   # Energy histogram settings [in keV]
-  TBG_t_Bin="--t_energyHistogram.period 10 --t_energyHistogram.filter all --t_energyHistogram.binCount 1024 --t_energyHistogram.minEnergy 0 --t_energyHistogram.maxEnergy 500000"
-  TBG_d_Bin="--d_energyHistogram.period 10 --d_energyHistogram.filter all --d_energyHistogram.binCount 1024 --d_energyHistogram.minEnergy 0 --d_energyHistogram.maxEnergy 500000"
-  TBG_n_Bin="--n_energyHistogram.period 10 --n_energyHistogram.filter all --n_energyHistogram.binCount 1024 --n_energyHistogram.minEnergy 0 --n_energyHistogram.maxEnergy 500000"
-  TBG_He4_Bin="--He4_energyHistogram.period 10 --He4_energyHistogram.filter all --He4_energyHistogram.binCount 1024 --He4_energyHistogram.minEnergy 0 --He4_energyHistogram.maxEnergy 500000"
-  
-  # run the sim: 1 node, 24x24x24 cells, 50 steps
-  mpiexec -n 1 ../bin/picongpu -d 1 1 1 -g 24 24 24 --periodic 1 1 1 -s 50 \
+  TBG_t_Bin="--t_energyHistogram.period 10 --t_energyHistogram.filter all --t_energyHistogram.binCount 3 --t_energyHistogram.minEnergy 0 --t_energyHistogram.maxEnergy 2"
+  TBG_d_Bin="--d_energyHistogram.period 10 --d_energyHistogram.filter all --d_energyHistogram.binCount 3 --d_energyHistogram.minEnergy 0 --d_energyHistogram.maxEnergy 2"
+  TBG_n_Bin="--n_energyHistogram.period 10 --n_energyHistogram.filter all --n_energyHistogram.binCount 3 --n_energyHistogram.minEnergy 0 --n_energyHistogram.maxEnergy 2"
+  TBG_He4_Bin="--He4_energyHistogram.period 10 --He4_energyHistogram.filter all --He4_energyHistogram.binCount 3 --He4_energyHistogram.minEnergy 0 --He4_energyHistogram.maxEnergy 2"
+
+  # run the sim: 1 node, 24x24x24 cells, 250 steps
+  mpiexec -n 1 ../bin/picongpu -d 1 1 1 -g 24 24 24 --periodic 1 1 1 -s 500 \
     --d_macroParticlesCount.period 10 --t_macroParticlesCount.period 10 \
     --n_macroParticlesCount.period 10 --He4_macroParticlesCount.period 10 \
     $TBG_t_Bin $TBG_d_Bin $TBG_n_Bin $TBG_He4_Bin

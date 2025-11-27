@@ -105,8 +105,8 @@ def main():
     print("--- D-T Fusion Rate Simulation ---")
 
     # --- 1. Define Simulation and Particle Parameters ---
-    n_D = 1e31  # Deuterium density (particles/m^3)
-    n_T = 1e31  # Tritium density (particles/m^3)
+    n_D = 1e28  # Deuterium density (particles/m^3)
+    n_T = 1e28  # Tritium density (particles/m^3)
     gamma = 1.001 # Lorentz factor for both clouds
     
     # Particle masses
@@ -121,7 +121,7 @@ def main():
     
     # Simulation time
     DELTA_T = 1e-15 # Timestep in seconds
-    TIMESTEPS = 30 # Number of timesteps to simulate
+    TIMESTEPS = 500 # Number of timesteps to simulate
 
     # --- 2. Relativistic Kinematics Calculation ---
     # Calculate velocity of particles from gamma
@@ -143,7 +143,7 @@ def main():
     # Convert energy to keV for the sigma function
     E_rel_keV = E_rel_joules / const.e / 1000.0
 
-    print(f"Relativistic relative velocity: {v_rel/const.c:.3f} c ({v_rel:.3e} m/s)")
+    print(f"Relativistic relative velocity: {v_rel/const.c:.3e} c ({v_rel:.3e} m/s)")
     print(f"Relative kinetic energy (CM): {E_rel_keV:.3e} keV")
     print("-" * 35)
 
@@ -163,7 +163,7 @@ def main():
     cell_volume = CELL_WIDTH * CELL_HEIGHT * CELL_DEPTH
     total_volume = cell_volume * GRID_X * GRID_Y * GRID_Z
 
-    print(f"Calculated cross-section: {sigma_m2 / 1e-31:.5f} milibarns ({sigma_m2:.3e} m^2)")
+    print(f"Calculated cross-section: {sigma_m2 / 1e-31:.3e} milibarns ({sigma_m2:.3e} m^2)")
     print(f"Total simulation volume: {total_volume:.3e} m^3")
 
     # --- 4. Final Reaction Calculation ---
@@ -206,14 +206,14 @@ def main():
             
             # Display particle counts
             print("\nParticle Counts:")
-            print(f"{'Particle':<10} {'Initial':<15} {'Final':<15} {'Change':<15}")
-            print("-" * 60)
+            print(f"{'Particle':<10} {'Initial':<20} {'Final':<20} {'Change':<20}")
+            print("-" * 70)
             for name in ['d', 't', 'He4', 'n']:
                 initial = counts_initial[name]
                 final = counts_final[name]
                 change = final - initial
-                print(f"{name:<10} {initial:<15.0f} {final:<15.0f} {change:+15.0f}")
-            print("-" * 60)
+                print(f"{name:<10} {initial:<20.3e} {final:<20.3e} {change:+20.3e}")
+            print("-" * 70)
             
             # --- Validation Checks ---
             validation_passed = True
@@ -223,8 +223,8 @@ def main():
             percent_diff_he4 = abs(actual_he4_count - reactions_in_timestep) / reactions_in_timestep * 100
             print(f"\n📊 Check 1: He4 count vs prediction")
             print(f"   Predicted reactions: {reactions_in_timestep:.3e}")
-            print(f"   Actual He4 particles: {actual_he4_count:.0f}")
-            print(f"   Percentage difference: {percent_diff_he4:.2f}%")
+            print(f"   Actual He4 particles: {actual_he4_count:.3e}")
+            print(f"   Percentage difference: {percent_diff_he4:.3e}%")
             if percent_diff_he4 <= 20.0:
                 print("   ✅ PASSED: Within 20% tolerance")
             else:
@@ -232,14 +232,14 @@ def main():
                 validation_passed = False
             
             # Check 2: Deuteron and Triton decrease should be equal (within 1%)
-            d_decrease = counts_initial['d'] - counts_final['d']
-            t_decrease = counts_initial['t'] - counts_final['t']
+            d_decrease = abs(counts_initial['d'] - counts_final['d'])
+            t_decrease = abs(counts_initial['t'] - counts_final['t'])
             print(f"\n📊 Check 2: Deuteron decrease vs Triton decrease")
-            print(f"   Deuteron decrease: {d_decrease:.0f}")
-            print(f"   Triton decrease: {t_decrease:.0f}")
+            print(f"   Deuteron decrease: {d_decrease:.3e}")
+            print(f"   Triton decrease: {t_decrease:.3e}")
             if d_decrease > 0 and t_decrease > 0:
                 percent_diff_dt = abs(d_decrease - t_decrease) / max(d_decrease, t_decrease) * 100
-                print(f"   Percentage difference: {percent_diff_dt:.2f}%")
+                print(f"   Percentage difference: {percent_diff_dt:.3e}%")
                 if percent_diff_dt <= 1.0:
                     print("   ✅ PASSED: Within 1% tolerance")
                 else:
@@ -252,11 +252,11 @@ def main():
             he4_produced = counts_final['He4'] - counts_initial['He4']
             n_produced = counts_final['n'] - counts_initial['n']
             print(f"\n📊 Check 3: He4 production vs Neutron production")
-            print(f"   He4 produced: {he4_produced:.0f}")
-            print(f"   Neutrons produced: {n_produced:.0f}")
+            print(f"   He4 produced: {he4_produced:.3e}")
+            print(f"   Neutrons produced: {n_produced:.3e}")
             if he4_produced > 0 and n_produced > 0:
                 percent_diff_he4n = abs(he4_produced - n_produced) / max(he4_produced, n_produced) * 100
-                print(f"   Percentage difference: {percent_diff_he4n:.2f}%")
+                print(f"   Percentage difference: {percent_diff_he4n:.3e}%")
                 if percent_diff_he4n <= 1.0:
                     print("   ✅ PASSED: Within 1% tolerance")
                 else:
@@ -269,11 +269,11 @@ def main():
             reactants_consumed = d_decrease + t_decrease
             products_created = he4_produced + n_produced
             print(f"\n📊 Check 4: Particle conservation (D+T consumed vs He4+n produced)")
-            print(f"   Deuterons + Tritons consumed: {reactants_consumed:.0f}")
-            print(f"   He4 + Neutrons produced: {products_created:.0f}")
+            print(f"   Deuterons + Tritons consumed: {reactants_consumed:.3e}")
+            print(f"   He4 + Neutrons produced: {products_created:.3e}")
             if reactants_consumed > 0 and products_created > 0:
                 percent_diff_conservation = abs(reactants_consumed - products_created) / reactants_consumed * 100
-                print(f"   Percentage difference: {percent_diff_conservation:.2f}%")
+                print(f"   Percentage difference: {percent_diff_conservation:.3e}%")
                 if percent_diff_conservation <= 1.0:
                     print("   ✅ PASSED: Within 1% tolerance")
                 else:

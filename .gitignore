@@ -4,6 +4,25 @@ build/
 **/build/
 **/.build/
 
+# Simulation output directories
+simOutput/
+**/simOutput/
+**/simOutput_*/
+
+# Binary/executable files from PIConGPU
+bin/cuda_memtest
+bin/cuda_memtest.sh
+bin/egetopt
+bin/mpiInfo
+bin/pic-build
+bin/pic-compile
+bin/pic-configure
+bin/pic-create
+bin/pic-edit
+bin/picongpu
+bin/picongpu-completion.bash
+bin/tbg
+
 # Binary/executable directories
 
 # pycache
