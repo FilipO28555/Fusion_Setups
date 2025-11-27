@@ -100,16 +100,23 @@ if [ $ret_build -eq 0 ] ; then
   echo "Run setup!"
   
   # Energy histogram settings [in keV]
-  TBG_t_Bin="--t_energyHistogram.period 10 --t_energyHistogram.filter all --t_energyHistogram.binCount 3 --t_energyHistogram.minEnergy 0 --t_energyHistogram.maxEnergy 2"
-  TBG_d_Bin="--d_energyHistogram.period 10 --d_energyHistogram.filter all --d_energyHistogram.binCount 3 --d_energyHistogram.minEnergy 0 --d_energyHistogram.maxEnergy 2"
-  TBG_n_Bin="--n_energyHistogram.period 10 --n_energyHistogram.filter all --n_energyHistogram.binCount 3 --n_energyHistogram.minEnergy 0 --n_energyHistogram.maxEnergy 2"
-  TBG_He4_Bin="--He4_energyHistogram.period 10 --He4_energyHistogram.filter all --He4_energyHistogram.binCount 3 --He4_energyHistogram.minEnergy 0 --He4_energyHistogram.maxEnergy 2"
+  TBG_t_Bin="--t_energyHistogram.period 150 --t_energyHistogram.filter all --t_energyHistogram.binCount 3 --t_energyHistogram.minEnergy 0 --t_energyHistogram.maxEnergy 2"
+  TBG_d_Bin="--d_energyHistogram.period 150 --d_energyHistogram.filter all --d_energyHistogram.binCount 3 --d_energyHistogram.minEnergy 0 --d_energyHistogram.maxEnergy 2"
+  TBG_n_Bin="--n_energyHistogram.period 150 --n_energyHistogram.filter all --n_energyHistogram.binCount 3 --n_energyHistogram.minEnergy 0 --n_energyHistogram.maxEnergy 2"
+  TBG_He4_Bin="--He4_energyHistogram.period 150 --He4_energyHistogram.filter all --He4_energyHistogram.binCount 3 --He4_energyHistogram.minEnergy 0 --He4_energyHistogram.maxEnergy 2"
 
-  # run the sim: 1 node, 24x24x24 cells, 250 steps
-  mpiexec -n 1 ../bin/picongpu -d 1 1 1 -g 24 24 24 --periodic 1 1 1 -s 500 \
-    --d_macroParticlesCount.period 10 --t_macroParticlesCount.period 10 \
-    --n_macroParticlesCount.period 10 --He4_macroParticlesCount.period 10 \
-    $TBG_t_Bin $TBG_d_Bin $TBG_n_Bin $TBG_He4_Bin
+  # PNG output settings (every 5 steps, YX plane - for 2D this is the full domain)
+  TBG_d_png="--d_png.period 5 --d_png.axis yx --d_png.slicePoint 0.5 --d_png.folder pngDeuterons"
+  TBG_t_png="--t_png.period 5 --t_png.axis yx --t_png.slicePoint 0.5 --t_png.folder pngTritons"
+  TBG_He4_png="--He4_png.period 5 --He4_png.axis yx --He4_png.slicePoint 0.5 --He4_png.folder pngHe4"
+  TBG_n_png="--n_png.period 5 --n_png.axis yx --n_png.slicePoint 0.5 --n_png.folder pngNeutrons"
+
+  # run the sim: 2D simulation, 1024x1024 cells, 500 steps
+  mpiexec -n 1 ../bin/picongpu -d 1 1 -g 1024 1024 --periodic 1 1 -s 999999999 \
+    --d_macroParticlesCount.period 150 --t_macroParticlesCount.period 150 \
+    --n_macroParticlesCount.period 150 --He4_macroParticlesCount.period 150 \
+    $TBG_t_Bin $TBG_d_Bin $TBG_n_Bin $TBG_He4_Bin \
+    $TBG_d_png $TBG_t_png $TBG_He4_png $TBG_n_png
   cd ..
 fi
 

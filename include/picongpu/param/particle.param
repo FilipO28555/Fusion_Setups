@@ -55,7 +55,7 @@ namespace picongpu
             /** Define Lorentz factor of initial particle drift. */
             struct DriftParamNegative
             {
-                static constexpr float_64 gamma = 1.001;
+                static constexpr float_64 gamma = 1.1;
                 /** Define initial particle drift direction vector.
                  */
                 static constexpr auto driftDirection = float3_X(0.0, -1.0, 0.0);
@@ -63,7 +63,7 @@ namespace picongpu
             /** Define Lorentz factor of initial particle drift. */
             struct DriftParamPositive
             {
-                static constexpr float_64 gamma = 1.001;
+                static constexpr float_64 gamma = 1.1;
                 /** Define initial particle drift direction vector.
                  */
                 static constexpr auto driftDirection = float3_X(0.0, 1.0, 0.0);

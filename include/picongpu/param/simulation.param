@@ -44,12 +44,19 @@
 
 namespace picongpu
 {
+    /** Grid dimensions (number of cells in each direction)
+     *  These should match the -g command line arguments
+     *  For 2D simulations, Nz is ignored but kept for compatibility
+     */
+    constexpr uint32_t Nx = 1024;
+    constexpr uint32_t Ny = 1024;
+    constexpr uint32_t Nz = 1;  // Not used in 2D
+
     namespace SI
     {
         /** Duration of one timestep
          *  unit: seconds */
         constexpr float_64 DELTA_T_SI = 1e-15; // 0.1 fs
-
         /** equals X
          *  unit: meter */
         constexpr float_64 CELL_WIDTH_SI = 6e-7;
@@ -74,6 +81,7 @@ namespace picongpu
     /** (Approximate) Number of maximum macro-particles per cell.
      *
      * Used internally for unit normalization.
+     * For 2D 1024x1024 with 5GB GPU: max ~40 ppc per species
      */
-    constexpr uint32_t TYPICAL_PARTICLES_PER_CELL = 100;
+    constexpr uint32_t TYPICAL_PARTICLES_PER_CELL = 30;
 } // namespace picongpu

@@ -39,8 +39,8 @@ namespace picongpu
          * the functors are called in order (from first to last functor)
          */
         using InitPipeline = pmacc::mp_list<
-            CreateDensity<densityProfiles::Homogenous, startPosition::Random, PIC_Deuterons>,
-            CreateDensity<densityProfiles::Homogenous, startPosition::Random, PIC_Tritons>,
+            CreateDensity<densityProfiles::SphereCenter, startPosition::Random, PIC_Deuterons>,
+            CreateDensity<densityProfiles::SphereCenter, startPosition::Random, PIC_Tritons>,
             
             Manipulate<manipulators::AssignYDriftPositive, PIC_Deuterons>,
             Manipulate<manipulators::AssignYDriftNegative, PIC_Tritons>>;

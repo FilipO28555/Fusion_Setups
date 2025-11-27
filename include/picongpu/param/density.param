@@ -84,6 +84,46 @@ namespace picongpu
         using GaussianCloudR = GaussianCloudImpl<GaussianCloudParamR>;
         using GaussianCloudL = GaussianCloudImpl<GaussianCloudParamL>;
 
+        /** Spherical Gaussian cloud centered in the middle of the simulation domain
+         *  Center is calculated from Nx, Ny, Nz and cell sizes defined in simulation.param
+         */
+        struct SphereCenterParam
+        {
+            /** Profile Formula:
+             *     exponent = |globalCellPos - center| / sigma
+             *     density = e^[ gasFactor * exponent^gasPower ]
+             */
+            static constexpr float_X gasFactor = -0.5;
+            static constexpr float_X gasPower = 2.0;
+
+            /** height of vacuum area on top border
+             *  unit: cells
+             */
+            static constexpr uint32_t vacuumCellsY = 0;
+
+            /** The central position of the density distribution
+             *  Calculated as (N * CELL_SIZE) / 2 for each dimension
+             *  unit: meter
+             */
+            static constexpr floatD_64 center_SI = float3_64(
+                Nx * SI::CELL_WIDTH_SI / 2.0,
+                Ny * SI::CELL_HEIGHT_SI / 2.0,
+                Nz * SI::CELL_DEPTH_SI / 2.0
+            ).shrink<simDim>();
+
+            /** the distance from center until the density decreases to its 1/e-th part
+             *  Set to 1/4 of the smallest domain dimension
+             *  unit: meter */
+            static constexpr floatD_64 sigma_SI = float3_64(
+                Nx * SI::CELL_WIDTH_SI / 9.0,
+                Ny * SI::CELL_HEIGHT_SI / 9.0,
+                Nz * SI::CELL_DEPTH_SI / 9.0
+            ).shrink<simDim>();
+        };
+
+        /* definition of centered sphere profile */
+        using SphereCenter = GaussianCloudImpl<SphereCenterParam>;
+
         struct FreeFormulaFunctor
         {
             /** This formula uses SI quantities only
