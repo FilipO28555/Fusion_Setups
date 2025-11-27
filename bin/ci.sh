@@ -94,6 +94,7 @@ echo
 echo
 pic-build -j 10
 ret_build=$?
+# ret_build=0
 if [ $ret_build -eq 0 ] ; then
   cd $simPath
   echo "Run setup!"
